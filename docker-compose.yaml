@@ -1,0 +1,11 @@
+version: "3.8"
+
+services:
+  webapp:
+    container_name: webapp_react
+    build:
+      context: ./app
+    restart: unless-stopped
+    command: npm start
+    ports:
+      - 3000:3000
