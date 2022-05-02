@@ -1,0 +1,15 @@
+
+.game-letter-box{
+    display:inline-block;
+    width: 60px;
+    height:60px;
+    border:1px solid gainsboro;
+}
+
+.game-letter{
+    display:flex;
+    justify-content: center;
+    align-content: center;
+    align-items: center;
+    font-weight: 400;
+}

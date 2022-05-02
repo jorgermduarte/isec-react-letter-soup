@@ -4,7 +4,7 @@ services:
   webapp:
     container_name: webapp_react
     build:
-      context: ./app
+      context: .
     restart: unless-stopped
     command: npm start
     ports:
