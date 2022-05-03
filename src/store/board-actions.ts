@@ -45,10 +45,13 @@ export const setWords = createAsyncThunk(
 export const updateMatrixPosition = createAsyncThunk(
   'gameboard/updateMatrixPosition',
   async (obj: updateMatrixType): Promise<updateMatrixType> => {
-    return {
-      line: obj.line,
-      column: obj.column,
-      letter: obj.letter,
-    } as updateMatrixType;
+    return obj;
+  }
+);
+
+export const updateMatrix = createAsyncThunk(
+  'gameboard/updateMatrix',
+  async (obj: letterProperties[][]): Promise<letterProperties[][]> => {
+    return obj;
   }
 );

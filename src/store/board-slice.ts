@@ -1,5 +1,10 @@
 import {createSlice, PayloadAction} from '@reduxjs/toolkit';
-import {setMatrix, setWords, updateMatrixPosition} from './board-actions';
+import {
+  setMatrix,
+  setWords,
+  updateMatrix,
+  updateMatrixPosition,
+} from './board-actions';
 
 export type letterProperties = {
   letter: string;
@@ -26,11 +31,15 @@ type DifficultySpecs = {
   totalWords: number;
 };
 
+type GameRenderization = {
+  wordsRendered: number;
+};
+
 export type BoardState = {
   specifications: DifficultySpecs;
   words: string[];
   matrix: letterProperties[][];
-  rendered: boolean;
+  settings: GameRenderization;
 };
 
 export const initialState: BoardState = {
@@ -38,11 +47,13 @@ export const initialState: BoardState = {
   matrix: [],
   specifications: {
     difficulty: BoardDifficulty.EASY,
-    columns: 10,
-    lines: 8,
+    columns: 18,
+    lines: 10,
     totalWords: 4,
   },
-  rendered: false,
+  settings: {
+    wordsRendered: 0,
+  },
 };
 
 const BoardSlice = createSlice({
@@ -80,6 +91,14 @@ const BoardSlice = createSlice({
       console.log('received payload! updateMatrixPosition');
       const {line, column, letter} = payload;
       state.matrix[line][column] = letter;
+    },
+    [`${updateMatrix.fulfilled}`]: (
+      state: BoardState,
+      {payload}: PayloadAction<letterProperties[][]>
+    ) => {
+      console.log('received payload! updateMatrixPosition');
+      state.matrix = payload;
+      state.settings.wordsRendered = state.settings.wordsRendered + 1;
     },
   },
 });

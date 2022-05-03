@@ -2,17 +2,21 @@ import React, {useEffect, useState} from 'react';
 import './Board.css';
 import {Row, Col} from 'react-bootstrap';
 import {useAppSelector} from '../../store/hooks';
-import {updateMatrixPosition} from '../../store/board-actions';
+import {updateMatrix, updateMatrixPosition} from '../../store/board-actions';
 import {useDispatch} from 'react-redux';
-import {updateMatrixType} from '../../store/board-slice';
+import {letterProperties, updateMatrixType} from '../../store/board-slice';
 
 const BoardComponent: React.FC<{}> = () => {
   const dispatch = useDispatch();
   const gameboard = useAppSelector(state => state.gameboard);
 
   useEffect(() => {
-    setMatrixWords();
+    startWordRenderization();
   }, [gameboard.words]);
+
+  useEffect(() => {
+    startWordRenderization();
+  }, [gameboard.settings.wordsRendered]);
 
   function displayBoard() {
     let cl, ln;
@@ -62,16 +66,25 @@ const BoardComponent: React.FC<{}> = () => {
     );
   }
 
-  function setMatrixWords() {
-    if (gameboard.words.length > 0) {
-      let i;
-      for (i = 0; i < gameboard.words.length; i++) {
-        renderWord(gameboard.words[i]);
-      }
+  function startWordRenderization() {
+    if (
+      gameboard.words.length > 0 &&
+      gameboard.settings.wordsRendered < gameboard.words.length
+    ) {
+      let currentBoard = gameboard.matrix.map(obj => ({...obj}));
+      currentBoard = renderWord(
+        gameboard.words[gameboard.settings.wordsRendered],
+        currentBoard
+      );
+      dispatch(updateMatrix(currentBoard));
     }
   }
 
-  function renderWord(currentWord: string, failures?: number) {
+  function renderWord(
+    currentWord: string,
+    editedBoard: letterProperties[][],
+    failures?: number
+  ) {
     let currentFailures = failures || 0;
     if (failures) {
       console.log(
@@ -79,34 +92,35 @@ const BoardComponent: React.FC<{}> = () => {
       );
     }
     let renderWordSuccessfully = false;
-    const failuresLimit = 20;
+    const failuresLimit = 60;
     const displayType = Math.floor(Math.random() * 3);
     console.log(`display type : ${displayType}, word: ${currentWord}`);
     //todo - add the inverted methods based on this ones, render columns inverted, lines inverted and diags inverted
     switch (displayType) {
       case 0:
-        renderWordSuccessfully = displayWordByColumn(currentWord);
+        renderWordSuccessfully = displayWordByLine(currentWord, editedBoard);
         break;
       case 1:
-        renderWordSuccessfully = displayWordByLine(currentWord);
+        renderWordSuccessfully = displayWordByColumn(currentWord, editedBoard);
         break;
       case 2:
-        renderWordSuccessfully = displayWordByDiag(currentWord);
+        renderWordSuccessfully = displayWordByDiag(currentWord, editedBoard);
         break;
     }
     if (!renderWordSuccessfully) currentFailures++;
     if (currentFailures > failuresLimit && renderWordSuccessfully === false) {
       //todo - add the logic based on the word was not rendered successfully
       console.log(`- failed to render the word ${currentWord} !!!!!!!`);
-      return false;
     } else if (!renderWordSuccessfully) {
-      renderWord(currentWord, currentFailures);
-    } else {
-      return true;
+      renderWord(currentWord, editedBoard, currentFailures);
     }
+    return editedBoard;
   }
 
-  function displayWordByColumn(payload: string) {
+  function displayWordByColumn(
+    payload: string,
+    editedBoard: letterProperties[][]
+  ) {
     try {
       let allowed = true;
       const randomColumn = Math.floor(
@@ -115,7 +129,9 @@ const BoardComponent: React.FC<{}> = () => {
       let x = 0;
 
       //verify if the word itself is bigger than the lines / columns
-      if (payload.length > gameboard.specifications.lines) return false;
+      if (payload.length > gameboard.specifications.lines) {
+        return false;
+      }
 
       if (gameboard.specifications.columns > payload.length) {
         for (x = 0; x < payload.length; x++) {
@@ -131,25 +147,23 @@ const BoardComponent: React.FC<{}> = () => {
       if (!allowed) return allowed;
 
       for (x = 0; x < payload.length; x++) {
-        dispatch(
-          updateMatrixPosition({
-            line: x,
-            column: randomColumn,
-            letter: {
-              letter: payload[x],
-              filled: true,
-            },
-          })
-        );
+        editedBoard[x][randomColumn] = {
+          letter: payload[x],
+          filled: true,
+        };
       }
 
       return true;
-    } catch {
+    } catch (err) {
+      console.log(err);
       return false;
     }
   }
 
-  function displayWordByLine(word: string): boolean {
+  function displayWordByLine(
+    word: string,
+    editedBoard: letterProperties[][]
+  ): boolean {
     try {
       let allowed = true;
       const randomLine = Math.floor(
@@ -174,16 +188,10 @@ const BoardComponent: React.FC<{}> = () => {
 
       if (gameboard.matrix[randomLine].length > word.length) {
         for (x = 0; x < word.length; x++) {
-          dispatch(
-            updateMatrixPosition({
-              line: randomLine,
-              column: x,
-              letter: {
-                letter: word[x],
-                filled: true,
-              },
-            })
-          );
+          editedBoard[randomLine][x] = {
+            letter: word[x],
+            filled: true,
+          };
         }
       }
       return true;
@@ -192,7 +200,10 @@ const BoardComponent: React.FC<{}> = () => {
     }
   }
 
-  function displayWordByDiag(word: string): boolean {
+  function displayWordByDiag(
+    word: string,
+    editedBoard: letterProperties[][]
+  ): boolean {
     try {
       let allowed = true;
       const randomIndex = Math.floor(
@@ -220,16 +231,10 @@ const BoardComponent: React.FC<{}> = () => {
 
       for (ln = 0; ln < gameboard.specifications.lines; ln++) {
         if (word.length > ln) {
-          dispatch(
-            updateMatrixPosition({
-              line: ln,
-              column: cl,
-              letter: {
-                letter: word[ln],
-                filled: true,
-              },
-            } as updateMatrixType)
-          );
+          editedBoard[ln][cl] = {
+            letter: word[ln],
+            filled: true,
+          };
         } else {
           break;
         }
