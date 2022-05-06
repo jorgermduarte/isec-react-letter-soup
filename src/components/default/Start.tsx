@@ -26,7 +26,7 @@ const StartComponent: React.FC<{}> = () => {
           BoardStore.actions.setDifficulty({
             difficulty: BoardDifficulty.EASY,
             columns: 8,
-            lines: 7,
+            lines: 10,
             totalWords: 3,
           })
         );
