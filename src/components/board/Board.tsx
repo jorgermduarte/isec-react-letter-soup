@@ -2,9 +2,9 @@ import React, {useEffect, useState} from 'react';
 import './Board.css';
 import {Row, Col} from 'react-bootstrap';
 import {useAppSelector} from '../../store/hooks';
-import {updateMatrix, updateMatrixPosition} from '../../store/board-actions';
+import {updateMatrix} from '../../store/board-actions';
 import {useDispatch} from 'react-redux';
-import {letterProperties, updateMatrixType} from '../../store/board-slice';
+import {letterProperties} from '../../store/board-slice';
 import WordList from '../wordList/WordList';
 
 const BoardComponent: React.FC<{}> = () => {

@@ -1,0 +1,21 @@
+.startButton{
+    width:100%;
+}
+.gameTitle{
+    padding:30px;
+}
+
+.logo{
+    max-width:350px;
+}
+.col .btn{
+    width:95%;
+    padding:5px;
+    text-align: center;
+}
+.formStart{
+    text-align: center;
+}
+*{
+    font-family: 'Ubuntu';
+}
