@@ -10,6 +10,7 @@ export const setMatrix = createAsyncThunk(
     let cl, ln;
     const board = []; //clean the main board before do any action
     const allowedLetters = 'ABCEDFGHIJKLMNOPQRSTUVXZ';
+    let index = 0;
 
     for (ln = 0; ln < gameboard.specifications.lines; ln++) {
       const newLine = [];
@@ -20,7 +21,9 @@ export const setMatrix = createAsyncThunk(
             Math.floor(Math.random() * allowedLetters.length)
           ),
           filled: false,
+          index: index,
         } as letterProperties);
+        index++;
       }
       board.push(newLine);
     }

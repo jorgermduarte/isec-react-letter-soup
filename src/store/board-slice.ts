@@ -9,6 +9,7 @@ import {
 export type letterProperties = {
   letter: string;
   filled: boolean;
+  index: number;
 };
 
 export type updateMatrixType = {
@@ -96,8 +97,11 @@ const BoardSlice = createSlice({
       state: BoardState,
       {payload}: PayloadAction<letterProperties[][]>
     ) => {
-      console.log('received payload! updateMatrixPosition');
+      console.log(
+        'received payload! rewriting the matrix with the current payload :) '
+      );
       state.matrix = payload;
+      console.log('total words rendered: ', state.settings.wordsRendered + 1);
       state.settings.wordsRendered = state.settings.wordsRendered + 1;
     },
   },

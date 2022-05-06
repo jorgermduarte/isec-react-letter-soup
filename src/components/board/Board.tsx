@@ -5,6 +5,7 @@ import {useAppSelector} from '../../store/hooks';
 import {updateMatrix, updateMatrixPosition} from '../../store/board-actions';
 import {useDispatch} from 'react-redux';
 import {letterProperties, updateMatrixType} from '../../store/board-slice';
+import WordList from '../wordList/WordList';
 
 const BoardComponent: React.FC<{}> = () => {
   const dispatch = useDispatch();
@@ -12,11 +13,16 @@ const BoardComponent: React.FC<{}> = () => {
 
   useEffect(() => {
     startWordRenderization();
-  }, [gameboard.words]);
+  }, [gameboard.words, gameboard.settings.wordsRendered, gameboard.matrix]);
 
-  useEffect(() => {
-    startWordRenderization();
-  }, [gameboard.settings.wordsRendered]);
+  function invertWord(word: string) {
+    let newWord = '';
+    let i = word.length - 1;
+    for (i; i > -1; i--) {
+      newWord += word[i];
+    }
+    return newWord;
+  }
 
   function displayBoard() {
     let cl, ln;
@@ -54,18 +60,6 @@ const BoardComponent: React.FC<{}> = () => {
     return elements;
   }
 
-  function displayWordsList() {
-    return (
-      <div className="game-wordlist">
-        {gameboard.words.map(word => (
-          <div className="gameWord" key={'word-' + word}>
-            {word}
-          </div>
-        ))}
-      </div>
-    );
-  }
-
   function startWordRenderization() {
     if (
       gameboard.words.length > 0 &&
@@ -95,6 +89,11 @@ const BoardComponent: React.FC<{}> = () => {
     const failuresLimit = 60;
     const displayType = Math.floor(Math.random() * 3);
     console.log(`display type : ${displayType}, word: ${currentWord}`);
+    const invertedValue = Math.floor(Math.random() * 2);
+    const inverted = invertedValue > 0;
+    if (inverted) currentWord = invertWord(currentWord);
+
+    console.log(invertedValue);
     //todo - add the inverted methods based on this ones, render columns inverted, lines inverted and diags inverted
     switch (displayType) {
       case 0:
@@ -106,6 +105,8 @@ const BoardComponent: React.FC<{}> = () => {
       case 2:
         renderWordSuccessfully = displayWordByDiag(currentWord, editedBoard);
         break;
+      default:
+        renderWordSuccessfully = displayWordByDiag(currentWord, editedBoard);
     }
     if (!renderWordSuccessfully) currentFailures++;
     if (currentFailures > failuresLimit && renderWordSuccessfully === false) {
@@ -148,8 +149,11 @@ const BoardComponent: React.FC<{}> = () => {
 
       for (x = 0; x < payload.length; x++) {
         editedBoard[x][randomColumn] = {
-          letter: payload[x],
-          filled: true,
+          ...editedBoard[x][randomColumn],
+          ...{
+            letter: payload[x],
+            filled: true,
+          },
         };
       }
 
@@ -171,28 +175,32 @@ const BoardComponent: React.FC<{}> = () => {
       );
       let x = 0;
 
+      const lineLength = Object.keys(gameboard.matrix[randomLine]).length;
       if (word.length > gameboard.specifications.columns) return false;
 
       //in this case we are only verifying the word length compared to how much columns we have
-      //todo - we can use random indexs to display the word in different line index's too
-      if (gameboard.matrix[randomLine].length > word.length) {
+      if (lineLength > word.length) {
         for (x = 0; x < word.length; x++) {
           if (gameboard.matrix[randomLine][x].filled) {
-            if (gameboard.matrix[randomLine][x].letter !== word[x])
+            if (gameboard.matrix[randomLine][x].letter !== word[x]) {
               allowed = false;
+            }
           }
         }
+      } else {
+        allowed = false;
       }
 
       if (!allowed) return allowed;
 
-      if (gameboard.matrix[randomLine].length > word.length) {
-        for (x = 0; x < word.length; x++) {
-          editedBoard[randomLine][x] = {
+      for (x = 0; x < word.length; x++) {
+        editedBoard[randomLine][x] = {
+          ...editedBoard[randomLine][x],
+          ...{
             letter: word[x],
             filled: true,
-          };
-        }
+          },
+        };
       }
       return true;
     } catch {
@@ -232,8 +240,11 @@ const BoardComponent: React.FC<{}> = () => {
       for (ln = 0; ln < gameboard.specifications.lines; ln++) {
         if (word.length > ln) {
           editedBoard[ln][cl] = {
-            letter: word[ln],
-            filled: true,
+            ...editedBoard[ln][cl],
+            ...{
+              letter: word[ln],
+              filled: true,
+            },
           };
         } else {
           break;
@@ -250,8 +261,13 @@ const BoardComponent: React.FC<{}> = () => {
   return (
     <div className="gameboard">
       <Row>
-        <Col lg={10}>{displayBoard()}</Col>
-        <Col>{displayWordsList()}</Col>
+        <Col lg={10}>
+          {gameboard.settings.wordsRendered ===
+            gameboard.specifications.totalWords && displayBoard()}
+        </Col>
+        <Col>
+          <WordList></WordList>
+        </Col>
       </Row>
     </div>
   );
