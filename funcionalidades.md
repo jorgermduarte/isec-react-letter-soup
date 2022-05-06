@@ -20,7 +20,7 @@
 - [x] Apresentação de uma lista de palavras aleatórias (de entre uma lista disponível, definida num array ou num ficheiro);
 - [x] Apresentação da grelha que incluam as palavras em posição aleatória;
 - [ ] Seleção da palavra na grelha (com ajuda do rato e/ou teclado);
-- [ ] 3 níveis de jogo (simples, intermédio e avançado) em que a dimensão da grelha e número de palavras varia;
+- [x] 3 níveis de jogo (simples, intermédio e avançado) em que a dimensão da grelha e número de palavras varia;
 - [ ] Tempo de jogo limitado, dependendo do nível;
 - [ ] Pontuação (metodologia ao critério dos alunos);
 - [ ] Identificação de fim de jogo;
