@@ -2,7 +2,11 @@ import React, {useEffect, useState} from 'react';
 import './Board.css';
 import {Row, Col} from 'react-bootstrap';
 import {useAppSelector} from '../../store/hooks';
-import {updateMatrix, updateMatrixPosition} from '../../store/board-actions';
+import {
+  cleanMatrixSelections,
+  updateMatrix,
+  updateMatrixPosition,
+} from '../../store/board-actions';
 import {useDispatch} from 'react-redux';
 import {letterProperties} from '../../store/board-slice';
 import WordList from '../wordList/WordList';
@@ -242,6 +246,9 @@ const BoardComponent: React.FC<{}> = () => {
       });
       //todo - clean every word letter with the selected property true to false
       console.log("cleaning word index's ");
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      //@ts-ignore
+      dispatch(cleanMatrixSelections(gameboard.matrix));
     }
   }
 

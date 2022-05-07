@@ -58,3 +58,22 @@ export const updateMatrix = createAsyncThunk(
     return obj;
   }
 );
+
+export const cleanMatrixSelections = createAsyncThunk(
+  'gameboard/cleanMatrixSelections',
+  async (obj: letterProperties[][]): Promise<letterProperties[][]> => {
+    const newobj: letterProperties[][] = [];
+
+    for (let x = 0; x < obj.length; x++) {
+      const newLine = [];
+      for (let y = 0; y < Object.keys(obj[x]).length; y++) {
+        const newprops = {...obj[x][y]};
+        newprops.selected = false;
+        newLine.push(newprops);
+      }
+      newobj.push(newLine);
+    }
+
+    return newobj;
+  }
+);

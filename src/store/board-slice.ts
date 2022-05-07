@@ -1,5 +1,6 @@
 import {createSlice, PayloadAction} from '@reduxjs/toolkit';
 import {
+  cleanMatrixSelections,
   setMatrix,
   setWords,
   updateMatrix,
@@ -110,6 +111,15 @@ const BoardSlice = createSlice({
       state.matrix = payload;
       console.log('total words rendered: ', state.settings.wordsRendered + 1);
       state.settings.wordsRendered = state.settings.wordsRendered + 1;
+    },
+    [`${cleanMatrixSelections.fulfilled}`]: (
+      state: BoardState,
+      {payload}: PayloadAction<letterProperties[][]>
+    ) => {
+      console.log(
+        '[cleanMatrixSelections] received payload! rewriting the matrix with the current payload :) '
+      );
+      state.matrix = payload;
     },
   },
 });

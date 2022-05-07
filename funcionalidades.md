@@ -19,7 +19,7 @@
 
 - [x] Apresentação de uma lista de palavras aleatórias (de entre uma lista disponível, definida num array ou num ficheiro);
 - [x] Apresentação da grelha que incluam as palavras em posição aleatória;
-- [ ] Seleção da palavra na grelha (com ajuda do rato e/ou teclado);
+- [x] Seleção da palavra na grelha (com ajuda do rato e/ou teclado);
 - [x] 3 níveis de jogo (simples, intermédio e avançado) em que a dimensão da grelha e número de palavras varia;
 - [ ] Tempo de jogo limitado, dependendo do nível;
 - [ ] Pontuação (metodologia ao critério dos alunos);
@@ -48,8 +48,8 @@
 - [ ] Encontrar palavra na grelha e retirar/destacar que já foi encontrada na lista(30%)
 - [ ] Pontuação do Jogo (5%)
 - [ ] Identificação fim de jogo - Temporizador (5%)
-- [ ] Vários níveis de jogos (10%)
-- [ ] Permitir a especificação de novas palavras (10%)
+- [x] Vários níveis de jogos (10%)
+- [x] Permitir a especificação de novas palavras (10%)
 - [x] Critérios gerais a aplicar a nota final:
   - [x] Organização de código
   - [x] Metodologias usadas na implementação
