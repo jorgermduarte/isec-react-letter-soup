@@ -46,6 +46,7 @@ export type BoardState = {
   foundWords: string[];
   matrix: letterProperties[][];
   settings: GameRenderization;
+  timmer?: string;
 };
 
 export const initialState: BoardState = {
@@ -90,6 +91,7 @@ const BoardSlice = createSlice({
       console.log('received payload! setWords');
       console.log(payload);
       state.words = payload;
+      state.timmer = new Date().toISOString();
     },
     [`${updateMatrixPosition.fulfilled}`]: (
       state: BoardState,

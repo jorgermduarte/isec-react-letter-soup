@@ -1,11 +1,13 @@
 import React from 'react';
 import {useAppSelector} from '../../store/hooks';
+import Timmer from '../timmer/Timmer';
 
 const WordList: React.FC<{}> = () => {
   const gameboard = useAppSelector(state => state.gameboard);
 
   return (
     <div>
+      <Timmer></Timmer>
       <div className="game-difficulty">
         <p>
           <b>Dificuldade Atual: </b>
