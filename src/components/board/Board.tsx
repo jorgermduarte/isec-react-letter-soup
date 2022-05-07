@@ -53,7 +53,6 @@ const BoardComponent: React.FC<{}> = () => {
     return newWord;
   }
 
-  //todo - verify if there is a word in the user selection based on the current board game words
   function verifyFoundWord() {
     let word = '';
     console.log(wordSelection.word);
@@ -82,8 +81,29 @@ const BoardComponent: React.FC<{}> = () => {
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           //@ts-ignore
           dispatch(addFoundWord(correctWord));
+          console.log(wordSelection.indexList);
+
+          wordSelection.indexList.forEach(ii => {
+            const currentwordLetter = gameboard.matrix[ii.line][ii.column];
+
+            //set the word index with filled
+            dispatch(
+              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+              //@ts-ignore
+              updateMatrixPosition({
+                column: ii.column,
+                line: ii.line,
+                letter: {
+                  letter: currentwordLetter.letter,
+                  filled: currentwordLetter.filled,
+                  busy: true,
+                  selected: currentwordLetter.selected,
+                  index: currentwordLetter.index,
+                },
+              })
+            );
+          });
         }
-        //todo - set the word index with filled
       }
     });
   }
@@ -104,7 +124,7 @@ const BoardComponent: React.FC<{}> = () => {
           column: -1,
           line: -1,
         },
-        indexList: [index],
+        indexList: [],
         word: [],
       });
       console.log('set selected word index start: ', index);
@@ -136,7 +156,8 @@ const BoardComponent: React.FC<{}> = () => {
       }
       let difference = calculationEnd - calculationStart;
       //array with all letter index's that has the selection
-      const finalIndexList = [calculationStart, calculationEnd];
+      const finalIndexList = [];
+
       console.log('indexs difference length: ', difference);
       console.log(
         `start index: ${calculationStart}, end index: ${calculationEnd}`
@@ -153,7 +174,11 @@ const BoardComponent: React.FC<{}> = () => {
         for (let i = 0; i < difference + 1; i++) {
           const iterationLetter =
             gameboard.matrix[ln][iterationStartClLine + i];
-          finalIndexList.push(iterationLetter.index);
+          finalIndexList.push({
+            index: iterationLetter.index,
+            line: ln,
+            column: iterationStartClLine + i,
+          });
           wordLetters.push(iterationLetter.letter);
           dispatch(
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -186,7 +211,11 @@ const BoardComponent: React.FC<{}> = () => {
         for (let i = 0; i < difference + 1; i++) {
           const iterationLetter =
             gameboard.matrix[startLineColIteration + i][cl];
-          finalIndexList.push(iterationLetter.index);
+          finalIndexList.push({
+            index: iterationLetter.index,
+            line: startLineColIteration + i,
+            column: cl,
+          });
           wordLetters.push(iterationLetter.letter);
           dispatch(
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -226,7 +255,11 @@ const BoardComponent: React.FC<{}> = () => {
           for (let i = 0; i < diagDif + 1; i++) {
             const iterationLetterX =
               gameboard.matrix[startLineDiag + i][startColDiag + i];
-            finalIndexList.push(iterationLetterX.index);
+            finalIndexList.push({
+              index: iterationLetterX.index,
+              line: startLineDiag + i,
+              column: startColDiag + i,
+            });
             wordLetters.push(iterationLetterX.letter);
             dispatch(
               // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -250,7 +283,11 @@ const BoardComponent: React.FC<{}> = () => {
           for (let i = diagDif; i > 0; i--) {
             const iterationLetterX =
               gameboard.matrix[startLineDiag + i][startColDiag - i];
-            finalIndexList.push(iterationLetterX.index);
+            finalIndexList.push({
+              index: iterationLetterX.index,
+              line: startLineDiag + i,
+              column: startColDiag - i,
+            });
             wordLetters.push(iterationLetterX.letter);
             console.log('pusheddddddddddddddddddddddd');
             dispatch(
@@ -320,6 +357,8 @@ const BoardComponent: React.FC<{}> = () => {
         if (currentLetter.filled) elementClasses += ' filled';
         //selected is based on the letter is selected or not by the user checking if the user found the word itself
         if (currentLetter.selected) elementClasses += ' selected';
+        //check if a word was detected
+        if (currentLetter.busy) elementClasses += ' busy';
 
         elements.push(
           <div
