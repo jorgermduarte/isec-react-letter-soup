@@ -27,6 +27,11 @@ const WordList: React.FC<{}> = () => {
         <p>
           <b>Palavras encontradas:</b>
         </p>
+        {gameboard.foundWords.map(word => (
+          <div className="gameWordFound" key={'found-word-' + word}>
+            {word}
+          </div>
+        ))}
       </div>
     </div>
   );

@@ -1,5 +1,6 @@
 import {createSlice, PayloadAction} from '@reduxjs/toolkit';
 import {
+  addFoundWord,
   cleanMatrixSelections,
   setMatrix,
   setWords,
@@ -42,6 +43,7 @@ type GameRenderization = {
 export type BoardState = {
   specifications: DifficultySpecs;
   words: string[];
+  foundWords: string[];
   matrix: letterProperties[][];
   settings: GameRenderization;
 };
@@ -58,6 +60,7 @@ export const initialState: BoardState = {
   settings: {
     wordsRendered: 0,
   },
+  foundWords: [],
 };
 
 const BoardSlice = createSlice({
@@ -120,6 +123,12 @@ const BoardSlice = createSlice({
         '[cleanMatrixSelections] received payload! rewriting the matrix with the current payload :) '
       );
       state.matrix = payload;
+    },
+    [`${addFoundWord.fulfilled}`]: (
+      state: BoardState,
+      {payload}: PayloadAction<string>
+    ) => {
+      state.foundWords.push(payload);
     },
   },
 });

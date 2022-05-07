@@ -3,6 +3,7 @@ import './Board.css';
 import {Row, Col} from 'react-bootstrap';
 import {useAppSelector} from '../../store/hooks';
 import {
+  addFoundWord,
   cleanMatrixSelections,
   updateMatrix,
   updateMatrixPosition,
@@ -27,11 +28,21 @@ const BoardComponent: React.FC<{}> = () => {
       line: -1,
     },
     indexList: [],
+    word: [],
   });
 
   useEffect(() => {
     startWordRenderization();
   }, [gameboard.words, gameboard.settings.wordsRendered, gameboard.matrix]);
+
+  useEffect(() => {
+    if (
+      wordSelection.startLetterIndex.index > -1 &&
+      wordSelection.endLetterIndex.index > -1
+    ) {
+      verifyFoundWord();
+    }
+  }, [wordSelection]);
 
   function invertWord(word: string) {
     let newWord = '';
@@ -42,8 +53,44 @@ const BoardComponent: React.FC<{}> = () => {
     return newWord;
   }
 
+  //todo - verify if there is a word in the user selection based on the current board game words
+  function verifyFoundWord() {
+    let word = '';
+    console.log(wordSelection.word);
+    for (let i = 0; i < wordSelection.word.length; i++) {
+      word += wordSelection.word[i];
+    }
+    const invertedWord = invertWord(word);
+    console.log('current word: ', word);
+    console.log('inverted word: ', invertedWord);
+
+    gameboard.words.forEach(gameWord => {
+      let correctWord = '';
+      let found = false;
+      if (gameWord === word) {
+        found = true;
+        correctWord = word;
+      }
+      if (gameWord === invertedWord) {
+        found = true;
+        correctWord = invertedWord;
+      }
+      if (found) {
+        // verify if this word was already found
+        if (!gameboard.foundWords.includes(correctWord)) {
+          //add to the list
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          //@ts-ignore
+          dispatch(addFoundWord(correctWord));
+        }
+        //todo - set the word index with filled
+      }
+    });
+  }
+
   function setLetterSelection(ln: number, cl: number, index: number) {
     const letterCurrentSettings = gameboard.matrix[ln][cl];
+    const wordLetters: string[] = [];
 
     if (wordSelection.startLetterIndex.index === -1) {
       setWordSelection({
@@ -58,6 +105,7 @@ const BoardComponent: React.FC<{}> = () => {
           line: -1,
         },
         indexList: [index],
+        word: [],
       });
       console.log('set selected word index start: ', index);
       dispatch(
@@ -106,6 +154,7 @@ const BoardComponent: React.FC<{}> = () => {
           const iterationLetter =
             gameboard.matrix[ln][iterationStartClLine + i];
           finalIndexList.push(iterationLetter.index);
+          wordLetters.push(iterationLetter.letter);
           dispatch(
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             //@ts-ignore
@@ -138,6 +187,7 @@ const BoardComponent: React.FC<{}> = () => {
           const iterationLetter =
             gameboard.matrix[startLineColIteration + i][cl];
           finalIndexList.push(iterationLetter.index);
+          wordLetters.push(iterationLetter.letter);
           dispatch(
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             //@ts-ignore
@@ -177,6 +227,7 @@ const BoardComponent: React.FC<{}> = () => {
             const iterationLetterX =
               gameboard.matrix[startLineDiag + i][startColDiag + i];
             finalIndexList.push(iterationLetterX.index);
+            wordLetters.push(iterationLetterX.letter);
             dispatch(
               // eslint-disable-next-line @typescript-eslint/ban-ts-comment
               //@ts-ignore
@@ -200,6 +251,8 @@ const BoardComponent: React.FC<{}> = () => {
             const iterationLetterX =
               gameboard.matrix[startLineDiag + i][startColDiag - i];
             finalIndexList.push(iterationLetterX.index);
+            wordLetters.push(iterationLetterX.letter);
+            console.log('pusheddddddddddddddddddddddd');
             dispatch(
               // eslint-disable-next-line @typescript-eslint/ban-ts-comment
               //@ts-ignore
@@ -218,7 +271,6 @@ const BoardComponent: React.FC<{}> = () => {
           }
         }
       }
-
       setWordSelection({
         startLetterIndex: wordSelection.startLetterIndex,
         endLetterIndex: {
@@ -227,9 +279,8 @@ const BoardComponent: React.FC<{}> = () => {
           line: ln,
         },
         indexList: finalIndexList,
+        word: wordLetters,
       });
-
-      //todo - verifiy if there is a word in the user selection based on the current board game words
     } else {
       setWordSelection({
         startLetterIndex: {
@@ -243,6 +294,7 @@ const BoardComponent: React.FC<{}> = () => {
           line: -1,
         },
         indexList: [],
+        word: [],
       });
       //todo - clean every word letter with the selected property true to false
       console.log("cleaning word index's ");

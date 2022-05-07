@@ -77,3 +77,10 @@ export const cleanMatrixSelections = createAsyncThunk(
     return newobj;
   }
 );
+
+export const addFoundWord = createAsyncThunk(
+  'gameboard/addFoundWord',
+  async (word: string): Promise<string> => {
+    return word;
+  }
+);
