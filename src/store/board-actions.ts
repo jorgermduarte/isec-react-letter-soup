@@ -84,3 +84,17 @@ export const addFoundWord = createAsyncThunk(
     return word;
   }
 );
+
+export const changeEndGame = createAsyncThunk(
+  'gameboard/changeEndGame',
+  async (prop: boolean): Promise<boolean> => {
+    return prop;
+  }
+);
+
+export const changeInitialized = createAsyncThunk(
+  'gameboard/changeInitialized',
+  async (prop: boolean): Promise<boolean> => {
+    return prop;
+  }
+);

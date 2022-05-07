@@ -6,17 +6,22 @@ import {BoardDifficulty} from '../../store/board-slice';
 import {useDispatch} from 'react-redux';
 import BoardStore from '../../store/board-slice';
 import App from '../game/App';
+import {useAppSelector} from '../../store/hooks';
+import Congratulations from '../congratulations/congratulations';
+import {changeInitialized} from '../../store/board-actions';
 
 const StartComponent: React.FC<{}> = () => {
   const dispatch = useDispatch();
-  const [startGame, setStartGame] = useState({
-    initialized: false,
-  });
+  // const [startGame, setStartGame] = useState({
+  //   initialized: false,
+  // });
+
+  const gameboard = useAppSelector(state => state.gameboard);
 
   function StartGame() {
-    setStartGame({
-      initialized: true,
-    });
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    //@ts-ignore
+    dispatch(changeInitialized(true));
   }
 
   function SetGameDificulty(dificulty: BoardDifficulty) {
@@ -64,7 +69,9 @@ const StartComponent: React.FC<{}> = () => {
     }
   }
 
-  return startGame.initialized ? (
+  return gameboard.gameEnd === true ? (
+    <Congratulations></Congratulations>
+  ) : gameboard.initialized ? (
     <App></App>
   ) : (
     <div style={{padding: '20px'}} className="formStart">

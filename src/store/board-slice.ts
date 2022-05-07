@@ -1,6 +1,8 @@
 import {createSlice, PayloadAction} from '@reduxjs/toolkit';
 import {
   addFoundWord,
+  changeEndGame,
+  changeInitialized,
   cleanMatrixSelections,
   setMatrix,
   setWords,
@@ -47,6 +49,9 @@ export type BoardState = {
   matrix: letterProperties[][];
   settings: GameRenderization;
   timmer?: string;
+  gameEndTimmer?: string;
+  gameEnd: boolean;
+  initialized: boolean;
 };
 
 export const initialState: BoardState = {
@@ -62,6 +67,8 @@ export const initialState: BoardState = {
     wordsRendered: 0,
   },
   foundWords: [],
+  gameEnd: false,
+  initialized: false,
 };
 
 const BoardSlice = createSlice({
@@ -92,6 +99,9 @@ const BoardSlice = createSlice({
       console.log(payload);
       state.words = payload;
       state.timmer = new Date().toISOString();
+      state.gameEndTimmer = undefined;
+      state.foundWords = [];
+      state.settings.wordsRendered = 0;
     },
     [`${updateMatrixPosition.fulfilled}`]: (
       state: BoardState,
@@ -131,6 +141,33 @@ const BoardSlice = createSlice({
       {payload}: PayloadAction<string>
     ) => {
       state.foundWords.push(payload);
+    },
+    [`${changeEndGame.fulfilled}`]: (
+      state: BoardState,
+      {payload}: PayloadAction<boolean>
+    ) => {
+      state.gameEnd = payload;
+      if (payload === true) {
+        state.gameEndTimmer = new Date().toISOString();
+      } else {
+        state.initialized = false;
+        state.gameEnd = false;
+        state.gameEndTimmer = undefined;
+        state.foundWords = [];
+        state.settings.wordsRendered = 0;
+      }
+    },
+    [`${changeInitialized.fulfilled}`]: (
+      state: BoardState,
+      {payload}: PayloadAction<boolean>
+    ) => {
+      state.initialized = payload;
+      if (payload === false) {
+        state.gameEnd = false;
+        state.gameEndTimmer = undefined;
+        state.foundWords = [];
+        state.settings.wordsRendered = 0;
+      }
     },
   },
 });

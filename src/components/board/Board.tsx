@@ -4,6 +4,7 @@ import {Row, Col} from 'react-bootstrap';
 import {useAppSelector} from '../../store/hooks';
 import {
   addFoundWord,
+  changeEndGame,
   cleanMatrixSelections,
   updateMatrix,
   updateMatrixPosition,
@@ -44,6 +45,10 @@ const BoardComponent: React.FC<{}> = () => {
     }
   }, [wordSelection]);
 
+  useEffect(() => {
+    verifyEndGame();
+  }, [gameboard.foundWords]);
+
   function invertWord(word: string) {
     let newWord = '';
     let i = word.length - 1;
@@ -51,6 +56,16 @@ const BoardComponent: React.FC<{}> = () => {
       newWord += word[i];
     }
     return newWord;
+  }
+
+  function verifyEndGame() {
+    if (gameboard.foundWords.length > 0) {
+      if (gameboard.foundWords.length === gameboard.words.length) {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        //@ts-ignore
+        dispatch(changeEndGame(true));
+      }
+    }
   }
 
   function verifyFoundWord() {
@@ -135,7 +150,7 @@ const BoardComponent: React.FC<{}> = () => {
           column: cl,
           line: ln,
           letter: {
-            busy: false,
+            busy: letterCurrentSettings.busy,
             selected: true,
             letter: letterCurrentSettings.letter,
             index: letterCurrentSettings.index,
@@ -187,7 +202,7 @@ const BoardComponent: React.FC<{}> = () => {
               column: iterationStartClLine + i,
               line: ln,
               letter: {
-                busy: false,
+                busy: iterationLetter.busy,
                 selected: true,
                 index: iterationLetter.index,
                 letter: iterationLetter.letter,
@@ -224,7 +239,7 @@ const BoardComponent: React.FC<{}> = () => {
               column: cl,
               line: startLineColIteration + i,
               letter: {
-                busy: false,
+                busy: iterationLetter.busy,
                 selected: true,
                 index: iterationLetter.index,
                 letter: iterationLetter.letter,
@@ -268,7 +283,7 @@ const BoardComponent: React.FC<{}> = () => {
                 column: startColDiag + i,
                 line: startLineDiag + i,
                 letter: {
-                  busy: false,
+                  busy: iterationLetterX.busy,
                   selected: true,
                   index: iterationLetterX.index,
                   letter: iterationLetterX.letter,
@@ -297,7 +312,7 @@ const BoardComponent: React.FC<{}> = () => {
                 column: startColDiag - i,
                 line: startLineDiag + i,
                 letter: {
-                  busy: false,
+                  busy: iterationLetterX.busy,
                   selected: true,
                   index: iterationLetterX.index,
                   letter: iterationLetterX.letter,
