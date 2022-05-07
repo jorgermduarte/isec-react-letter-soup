@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import './Board.css';
 import {Row, Col} from 'react-bootstrap';
 import {useAppSelector} from '../../store/hooks';
-import {updateMatrix} from '../../store/board-actions';
+import {updateMatrix, updateMatrixPosition} from '../../store/board-actions';
 import {useDispatch} from 'react-redux';
 import {letterProperties} from '../../store/board-slice';
 import WordList from '../wordList/WordList';
@@ -10,6 +10,20 @@ import WordList from '../wordList/WordList';
 const BoardComponent: React.FC<{}> = () => {
   const dispatch = useDispatch();
   const gameboard = useAppSelector(state => state.gameboard);
+
+  const [wordSelection, setWordSelection] = useState({
+    startLetterIndex: {
+      index: -1,
+      column: -1,
+      line: -1,
+    },
+    endLetterIndex: {
+      index: -1,
+      column: -1,
+      line: -1,
+    },
+    indexList: [],
+  });
 
   useEffect(() => {
     startWordRenderization();
@@ -24,6 +38,213 @@ const BoardComponent: React.FC<{}> = () => {
     return newWord;
   }
 
+  function setLetterSelection(ln: number, cl: number, index: number) {
+    const letterCurrentSettings = gameboard.matrix[ln][cl];
+
+    if (wordSelection.startLetterIndex.index === -1) {
+      setWordSelection({
+        startLetterIndex: {
+          index: index,
+          column: cl,
+          line: ln,
+        },
+        endLetterIndex: {
+          index: -1,
+          column: -1,
+          line: -1,
+        },
+        indexList: [index],
+      });
+      console.log('set selected word index start: ', index);
+      dispatch(
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        //@ts-ignore
+        updateMatrixPosition({
+          column: cl,
+          line: ln,
+          letter: {
+            busy: false,
+            selected: true,
+            letter: letterCurrentSettings.letter,
+            index: letterCurrentSettings.index,
+            filled: letterCurrentSettings.filled,
+          },
+        })
+      );
+    } else if (wordSelection.endLetterIndex.index === -1) {
+      console.log('set selected word index end: ', index);
+
+      //we need to set every letter that we need as selected
+      let calculationStart = wordSelection.startLetterIndex.index;
+      let calculationEnd = index;
+
+      if (calculationEnd < calculationStart) {
+        calculationEnd = wordSelection.startLetterIndex.index;
+        calculationStart = index;
+      }
+      let difference = calculationEnd - calculationStart;
+      //array with all letter index's that has the selection
+      const finalIndexList = [calculationStart, calculationEnd];
+      console.log('indexs difference length: ', difference);
+      console.log(
+        `start index: ${calculationStart}, end index: ${calculationEnd}`
+      );
+      console.log(`last selection col:${cl} and ln:${ln}`);
+
+      //verify by line
+      if (difference < gameboard.specifications.lines) {
+        let iterationStartClLine = wordSelection.startLetterIndex.column;
+        if (cl < wordSelection.startLetterIndex.column) {
+          iterationStartClLine = cl;
+        }
+
+        for (let i = 0; i < difference + 1; i++) {
+          const iterationLetter =
+            gameboard.matrix[ln][iterationStartClLine + i];
+          finalIndexList.push(iterationLetter.index);
+          dispatch(
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            //@ts-ignore
+            updateMatrixPosition({
+              column: iterationStartClLine + i,
+              line: ln,
+              letter: {
+                busy: false,
+                selected: true,
+                index: iterationLetter.index,
+                letter: iterationLetter.letter,
+                filled: iterationLetter.filled,
+              },
+            })
+          );
+        }
+      }
+
+      //verify by column
+      else if (wordSelection.startLetterIndex.column === cl) {
+        let startLineColIteration = wordSelection.startLetterIndex.line;
+
+        if (wordSelection.startLetterIndex.line > ln) {
+          difference = wordSelection.startLetterIndex.line - ln;
+          startLineColIteration = ln;
+        } else {
+          difference = ln - wordSelection.startLetterIndex.line;
+        }
+        for (let i = 0; i < difference + 1; i++) {
+          const iterationLetter =
+            gameboard.matrix[startLineColIteration + i][cl];
+          finalIndexList.push(iterationLetter.index);
+          dispatch(
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            //@ts-ignore
+            updateMatrixPosition({
+              column: cl,
+              line: startLineColIteration + i,
+              letter: {
+                busy: false,
+                selected: true,
+                index: iterationLetter.index,
+                letter: iterationLetter.letter,
+                filled: iterationLetter.filled,
+              },
+            })
+          );
+        }
+      }
+
+      //verify by diag and inverted!
+      else if (
+        wordSelection.startLetterIndex.line !== ln &&
+        wordSelection.startLetterIndex.column !== cl
+      ) {
+        let startLineDiag = wordSelection.startLetterIndex.line;
+        let startColDiag = wordSelection.startLetterIndex.column;
+
+        if (startLineDiag > ln) {
+          startColDiag = cl;
+          startLineDiag = ln;
+          cl = wordSelection.startLetterIndex.column;
+          ln = wordSelection.startLetterIndex.line;
+        }
+
+        if (startColDiag < cl) {
+          const diagDif = cl - startColDiag;
+          for (let i = 0; i < diagDif + 1; i++) {
+            const iterationLetterX =
+              gameboard.matrix[startLineDiag + i][startColDiag + i];
+            finalIndexList.push(iterationLetterX.index);
+            dispatch(
+              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+              //@ts-ignore
+              updateMatrixPosition({
+                column: startColDiag + i,
+                line: startLineDiag + i,
+                letter: {
+                  busy: false,
+                  selected: true,
+                  index: iterationLetterX.index,
+                  letter: iterationLetterX.letter,
+                  filled: iterationLetterX.filled,
+                },
+              })
+            );
+          }
+        } else {
+          //do the inverse
+          const diagDif = startColDiag - cl;
+          for (let i = diagDif; i > 0; i--) {
+            const iterationLetterX =
+              gameboard.matrix[startLineDiag + i][startColDiag - i];
+            finalIndexList.push(iterationLetterX.index);
+            dispatch(
+              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+              //@ts-ignore
+              updateMatrixPosition({
+                column: startColDiag - i,
+                line: startLineDiag + i,
+                letter: {
+                  busy: false,
+                  selected: true,
+                  index: iterationLetterX.index,
+                  letter: iterationLetterX.letter,
+                  filled: iterationLetterX.filled,
+                },
+              })
+            );
+          }
+        }
+      }
+
+      setWordSelection({
+        startLetterIndex: wordSelection.startLetterIndex,
+        endLetterIndex: {
+          index: index,
+          column: cl,
+          line: ln,
+        },
+        indexList: finalIndexList,
+      });
+
+      //todo - verifiy if there is a word in the user selection based on the current board game words
+    } else {
+      setWordSelection({
+        startLetterIndex: {
+          index: -1,
+          column: -1,
+          line: -1,
+        },
+        endLetterIndex: {
+          index: -1,
+          column: -1,
+          line: -1,
+        },
+        indexList: [],
+      });
+      //todo - clean every word letter with the selected property true to false
+      console.log("cleaning word index's ");
+    }
+  }
+
   function displayBoard() {
     let cl, ln;
 
@@ -31,26 +252,26 @@ const BoardComponent: React.FC<{}> = () => {
 
     for (ln = 0; ln < gameboard.specifications.lines; ln++) {
       for (cl = 0; cl < gameboard.specifications.columns; cl++) {
+        const currentLetter = gameboard.matrix[ln][cl];
+        const currentLine = ln;
+        const currentCol = cl;
+        let elementClasses = 'game-letter-box';
+
+        //filled means that its a position that one word exists;
+        if (currentLetter.filled) elementClasses += ' filled';
+        //selected is based on the letter is selected or not by the user checking if the user found the word itself
+        if (currentLetter.selected) elementClasses += ' selected';
+
         elements.push(
-          gameboard.matrix[ln][cl].filled ? (
-            <div
-              className="game-letter-box filled"
-              key={`${ln}-${cl}-${gameboard.matrix[ln][cl].letter}-filled`}
-            >
-              <div className="game-letter">
-                {gameboard.matrix[ln][cl].letter}
-              </div>
-            </div>
-          ) : (
-            <div
-              className="game-letter-box"
-              key={`${ln}-${cl}-${gameboard.matrix[ln][cl].letter}`}
-            >
-              <div className="game-letter">
-                {gameboard.matrix[ln][cl].letter}
-              </div>
-            </div>
-          )
+          <div
+            className={elementClasses}
+            onClick={() =>
+              setLetterSelection(currentLine, currentCol, currentLetter.index)
+            }
+            key={`${ln}-${cl}-${gameboard.matrix[ln][cl].letter}`}
+          >
+            <div className="game-letter">{gameboard.matrix[ln][cl].letter}</div>
+          </div>
         );
         if (cl === gameboard.specifications.columns - 1)
           elements.push(<br key={`br-${ln}`} />);
@@ -70,6 +291,8 @@ const BoardComponent: React.FC<{}> = () => {
         gameboard.words[gameboard.settings.wordsRendered],
         currentBoard
       );
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      //@ts-ignore
       dispatch(updateMatrix(currentBoard));
     }
   }

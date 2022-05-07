@@ -10,6 +10,8 @@ export type letterProperties = {
   letter: string;
   filled: boolean;
   index: number;
+  selected?: boolean;
+  busy?: boolean;
 };
 
 export type updateMatrixType = {
@@ -91,7 +93,12 @@ const BoardSlice = createSlice({
     ) => {
       console.log('received payload! updateMatrixPosition');
       const {line, column, letter} = payload;
-      state.matrix[line][column] = letter;
+      state.matrix[line][column].letter = letter.letter
+        .toString()
+        .toUpperCase();
+      state.matrix[line][column].busy = letter.busy;
+      state.matrix[line][column].selected = letter.selected;
+      state.matrix[line][column].filled = letter.filled;
     },
     [`${updateMatrix.fulfilled}`]: (
       state: BoardState,

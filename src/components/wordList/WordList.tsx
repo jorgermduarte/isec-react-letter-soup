@@ -12,6 +12,8 @@ const WordList: React.FC<{}> = () => {
         </p>
         <p>{gameboard.specifications.difficulty}</p>
       </div>
+      <hr />
+
       <div className="game-wordlist">
         <p>
           <b>Lista de Palavras: </b>
@@ -21,6 +23,10 @@ const WordList: React.FC<{}> = () => {
             {word}
           </div>
         ))}
+        <hr />
+        <p>
+          <b>Palavras encontradas:</b>
+        </p>
       </div>
     </div>
   );
