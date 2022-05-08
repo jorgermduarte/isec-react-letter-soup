@@ -1,6 +1,5 @@
 **Todo stuff**
 - [ ] unsubscribe the timmer useEffect on game completed
-- [ ] playing again as a bug that is not matching the words list with the words rendered
 
 **Especificações mencionadas no trabalho**
 - [x] Criação do projeto através de React App
