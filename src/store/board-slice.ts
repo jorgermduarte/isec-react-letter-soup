@@ -87,27 +87,32 @@ const BoardSlice = createSlice({
       state: BoardState,
       {payload}: PayloadAction<letterProperties[][]>
     ) => {
-      console.log('received payload! setMatrix');
-      console.log(payload);
-      state.matrix = payload;
+      if (state.initialized) {
+        console.log('[setMatrix] received payload! generating new matrix');
+        console.log(payload);
+        state.matrix = payload;
+      }
     },
     [`${setWords.fulfilled}`]: (
       state: BoardState,
       {payload}: PayloadAction<string[]>
     ) => {
-      console.log('received payload! setWords');
-      console.log(payload);
-      state.words = payload;
-      state.timmer = new Date().toISOString();
-      state.gameEndTimmer = undefined;
-      state.foundWords = [];
-      state.settings.wordsRendered = 0;
+      if (state.initialized) {
+        console.log('[setWords] received payload! setWords');
+        state.words = payload;
+        state.timmer = new Date().toISOString();
+        state.gameEndTimmer = undefined;
+        state.foundWords = [];
+        state.settings.wordsRendered = 0;
+      }
     },
     [`${updateMatrixPosition.fulfilled}`]: (
       state: BoardState,
       {payload}: PayloadAction<updateMatrixType>
     ) => {
-      console.log('received payload! updateMatrixPosition');
+      console.log(
+        '[updateMatrixPosition] received payload! updateMatrixPosition'
+      );
       const {line, column, letter} = payload;
       state.matrix[line][column].letter = letter.letter
         .toString()
@@ -120,12 +125,14 @@ const BoardSlice = createSlice({
       state: BoardState,
       {payload}: PayloadAction<letterProperties[][]>
     ) => {
-      console.log(
-        'received payload! rewriting the matrix with the current payload :) '
-      );
-      state.matrix = payload;
-      console.log('total words rendered: ', state.settings.wordsRendered + 1);
-      state.settings.wordsRendered = state.settings.wordsRendered + 1;
+      if (state.initialized) {
+        console.log(
+          '[updateMatrix] received payload! rewriting the matrix with the current payload :) '
+        );
+        state.matrix = payload;
+        console.log('total words rendered: ', state.settings.wordsRendered + 1);
+        state.settings.wordsRendered = state.settings.wordsRendered + 1;
+      }
     },
     [`${cleanMatrixSelections.fulfilled}`]: (
       state: BoardState,
@@ -140,21 +147,31 @@ const BoardSlice = createSlice({
       state: BoardState,
       {payload}: PayloadAction<string>
     ) => {
-      state.foundWords.push(payload);
+      if (state.initialized) {
+        state.foundWords.push(payload);
+        console.log('[addFoundWord] received payload! added word to the list');
+      }
     },
     [`${changeEndGame.fulfilled}`]: (
       state: BoardState,
       {payload}: PayloadAction<boolean>
     ) => {
-      state.gameEnd = payload;
-      if (payload === true) {
-        state.gameEndTimmer = new Date().toISOString();
-      } else {
-        state.initialized = false;
-        state.gameEnd = false;
-        state.gameEndTimmer = undefined;
-        state.foundWords = [];
-        state.settings.wordsRendered = 0;
+      if (state.initialized) {
+        state.gameEnd = payload;
+
+        if (payload === true) {
+          console.log('setting end game timming');
+          state.gameEndTimmer = new Date().toISOString();
+        } else {
+          state.initialized = false;
+          state.gameEnd = false;
+          state.matrix = [];
+          state.gameEndTimmer = undefined;
+          state.settings.wordsRendered = 0;
+          state.words = [];
+          state.specifications = {...initialState.specifications};
+          console.log('[changeEndGame] SETTING INITIAL STATE FOR THE END GAME');
+        }
       }
     },
     [`${changeInitialized.fulfilled}`]: (
@@ -162,12 +179,6 @@ const BoardSlice = createSlice({
       {payload}: PayloadAction<boolean>
     ) => {
       state.initialized = payload;
-      if (payload === false) {
-        state.gameEnd = false;
-        state.gameEndTimmer = undefined;
-        state.foundWords = [];
-        state.settings.wordsRendered = 0;
-      }
     },
   },
 });

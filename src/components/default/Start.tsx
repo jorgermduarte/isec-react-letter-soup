@@ -1,22 +1,17 @@
-import React, {useState} from 'react';
+import React, {useEffect} from 'react';
 import {Col, Row, Form, Button, ButtonGroup} from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './Start.css';
 import {BoardDifficulty} from '../../store/board-slice';
 import {useDispatch} from 'react-redux';
 import BoardStore from '../../store/board-slice';
-import App from '../game/App';
+import Game from '../game/Game';
 import {useAppSelector} from '../../store/hooks';
 import Congratulations from '../congratulations/congratulations';
 import {changeInitialized} from '../../store/board-actions';
 
-const StartComponent: React.FC<{}> = () => {
+const AppInterface: React.FC<{}> = () => {
   const dispatch = useDispatch();
-  // const [startGame, setStartGame] = useState({
-  //   initialized: false,
-  // });
-
-  const gameboard = useAppSelector(state => state.gameboard);
 
   function StartGame() {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -68,12 +63,7 @@ const StartComponent: React.FC<{}> = () => {
         break;
     }
   }
-
-  return gameboard.gameEnd === true ? (
-    <Congratulations></Congratulations>
-  ) : gameboard.initialized ? (
-    <App></App>
-  ) : (
+  return (
     <div style={{padding: '20px'}} className="formStart">
       <Row>
         <Col md={{span: 4, offset: 4}}>
@@ -148,6 +138,23 @@ const StartComponent: React.FC<{}> = () => {
         </Col>
       </Row>
     </div>
+  );
+};
+
+const StartComponent: React.FC<{}> = () => {
+  const gameboard = useAppSelector(state => state.gameboard);
+
+  const IsGameEnded = gameboard.gameEnd === true;
+  const IsGameInitialized = gameboard.initialized;
+
+  console.log('ended, initialized', IsGameEnded, IsGameInitialized);
+  //if the game is ended show the congratulations
+  return IsGameEnded ? (
+    <Congratulations></Congratulations>
+  ) : IsGameInitialized ? ( // else if the game is intialized
+    <Game></Game> //shw the game itself
+  ) : (
+    <AppInterface></AppInterface> //not initialized? show the interface
   );
 };
 

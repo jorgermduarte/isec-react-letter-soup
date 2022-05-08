@@ -33,6 +33,7 @@ const Congratulations: React.FC<{}> = () => {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     //@ts-ignore
     dispatch(changeEndGame(false));
+    // window.location.reload();
   }
 
   return (
@@ -40,7 +41,7 @@ const Congratulations: React.FC<{}> = () => {
       <Col lg={{offset: 2, span: 8}}>
         <h3>Parabéns #nome, acabou o jogo</h3>
         <p>
-          Finalizou o jogo em #tempo na dificuldade{' '}
+          Finalizou o jogo em #tempo na dificuldade
           {gameboard.specifications.difficulty}
         </p>
         <p>A sua pontuação foi #pontuacao pontos</p>

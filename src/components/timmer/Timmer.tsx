@@ -24,7 +24,7 @@ const Timmer: React.FC<{}> = () => {
       //   console.log(gameboard.timmer);
 
       const distance = now.getTime() - new Date(gameboard.timmer!).getTime();
-      console.log(distance);
+      // console.log(distance);
       //   const days = Math.floor(distance / _day);
       //   const hours = Math.floor((distance % _day) / _hour);
       const minutes = Math.floor((distance % _hour) / _minute);

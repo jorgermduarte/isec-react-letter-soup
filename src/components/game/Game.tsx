@@ -1,17 +1,22 @@
 import React, {useEffect} from 'react';
 import GameBoard from '../board/Board';
-import './App.css';
+import './Game.css';
 import {useAppDispatch, useAppSelector} from '../../store/hooks';
 import {setMatrix, setWords} from '../../store/board-actions';
 
-const App: React.FC<{}> = () => {
+const Game: React.FC<{}> = () => {
   const dispatch = useAppDispatch();
   const gameboard = useAppSelector(state => state.gameboard);
 
   useEffect(() => {
     dispatch(setMatrix(gameboard));
-    dispatch(setWords(gameboard));
   }, []);
+
+  useEffect(() => {
+    if (gameboard.matrix.length > 0) {
+      dispatch(setWords(gameboard));
+    }
+  }, [gameboard.matrix.length]);
 
   return (
     <div className="App">
@@ -21,4 +26,4 @@ const App: React.FC<{}> = () => {
   );
 };
 
-export default App;
+export default Game;

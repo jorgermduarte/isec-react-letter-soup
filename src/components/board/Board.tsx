@@ -17,6 +17,7 @@ const BoardComponent: React.FC<{}> = () => {
   const dispatch = useDispatch();
   const gameboard = useAppSelector(state => state.gameboard);
 
+  console.log('total palavras:', gameboard.specifications.totalWords);
   const [wordSelection, setWordSelection] = useState({
     startLetterIndex: {
       index: -1,
@@ -34,7 +35,7 @@ const BoardComponent: React.FC<{}> = () => {
 
   useEffect(() => {
     startWordRenderization();
-  }, [gameboard.words, gameboard.settings.wordsRendered, gameboard.matrix]);
+  }, [gameboard.words, gameboard.settings.wordsRendered]);
 
   useEffect(() => {
     if (
@@ -49,16 +50,16 @@ const BoardComponent: React.FC<{}> = () => {
     verifyEndGame();
   }, [gameboard.foundWords]);
 
-  function invertWord(word: string) {
+  const invertWord = React.useCallback((word: string) => {
     let newWord = '';
     let i = word.length - 1;
     for (i; i > -1; i--) {
       newWord += word[i];
     }
     return newWord;
-  }
+  }, []);
 
-  function verifyEndGame() {
+  const verifyEndGame = React.useCallback(() => {
     if (gameboard.foundWords.length > 0) {
       if (gameboard.foundWords.length === gameboard.words.length) {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -66,7 +67,7 @@ const BoardComponent: React.FC<{}> = () => {
         dispatch(changeEndGame(true));
       }
     }
-  }
+  }, [gameboard.foundWords, gameboard.words]);
 
   function verifyFoundWord() {
     let word = '';
@@ -304,7 +305,6 @@ const BoardComponent: React.FC<{}> = () => {
               column: startColDiag - i,
             });
             wordLetters.push(iterationLetterX.letter);
-            console.log('pusheddddddddddddddddddddddd');
             dispatch(
               // eslint-disable-next-line @typescript-eslint/ban-ts-comment
               //@ts-ignore
