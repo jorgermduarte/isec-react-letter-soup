@@ -3,7 +3,7 @@ import {Button, Row, Col, Table} from 'react-bootstrap';
 import './congratulations.css';
 import {useAppSelector} from '../../store/hooks';
 import {useDispatch} from 'react-redux';
-import {changeEndGame, setWords, setMatrix} from '../../store/board-actions';
+import {changeEndGame} from '../../store/board-actions';
 
 const Statistics: React.FC<{}> = () => {
   return (

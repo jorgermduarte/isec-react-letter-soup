@@ -597,10 +597,7 @@ const BoardComponent: React.FC<{}> = () => {
   return (
     <div className="gameboard">
       <Row>
-        <Col lg={10}>
-          {gameboard.settings.wordsRendered ===
-            gameboard.specifications.totalWords && displayBoard()}
-        </Col>
+        <Col lg={10}>{gameboard.initialized && displayBoard()}</Col>
         <Col>
           <WordList></WordList>
         </Col>
