@@ -7,7 +7,6 @@ WORKDIR app
 COPY package*.json ./
 COPY . .
 
-# run npm install in our local machine
 RUN npm install --silent
 
 EXPOSE ${PORT}
