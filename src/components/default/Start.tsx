@@ -205,7 +205,7 @@ const AppInterface: React.FC<{}> = () => {
             </p>
             <ul>
               <li>a2021110042 - Jorge Duarte</li>
-              <li>a2021000000 - João Marques</li>
+              <li>a2021146383 - João Marques</li>
               <li>a2019122799 - Rodrigo Cruz</li>
             </ul>
           </Form.Group>

@@ -50,7 +50,7 @@
 - [x] Apresentação de uma lista de palavras aleatórias (5%)
 - [x] Preenchimento da grelha com palavras e letras de forma aleatória (20%)
 - [x] Encontrar palavra na grelha e retirar/destacar que já foi encontrada na lista(30%)
-- [ ] Pontuação do Jogo (5%)
+- [x] Pontuação do Jogo (5%)
 - [ ] Identificação fim de jogo - Temporizador (5%)
 - [x] Vários níveis de jogos (10%)
 - [x] Permitir a especificação de novas palavras (10%)
