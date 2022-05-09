@@ -1,5 +1,5 @@
 #node official alpine image
-FROM node:16.4.2:alpine
+FROM node:18:alpine
 
 # set working directory
 WORKDIR /app
