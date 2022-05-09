@@ -1,11 +1,19 @@
-version: "3.8"
+version: "3.6"
 
 services:
   webapp:
-    container_name: webapp_react
+    container_name: isec_react_soup_letter
     build:
       context: .
     restart: unless-stopped
     command: npm start
+    env_file: ./.env
     ports:
-      - 3000:3000
+      - $PORT:$PORT
+    expose:
+    - $PORT
+
+networks:
+  default:
+    external: true
+    name: nginx_production_default
