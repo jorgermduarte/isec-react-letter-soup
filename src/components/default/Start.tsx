@@ -127,7 +127,11 @@ const AppInterface: React.FC<{}> = () => {
                 <ButtonGroup>
                   <Col>
                     <Button
-                      variant="outline-success"
+                      className={
+                        gameboard.specifications.difficulty ===
+                          BoardDifficulty.EASY && 'selected-difficulty'
+                      }
+                      variant="secondary"
                       onClick={() => SetGameDificulty(BoardDifficulty.EASY)}
                     >
                       Fácil
@@ -135,7 +139,11 @@ const AppInterface: React.FC<{}> = () => {
                   </Col>
                   <Col>
                     <Button
-                      variant="outline-warning"
+                      className={
+                        gameboard.specifications.difficulty ===
+                          BoardDifficulty.MEDIUM && 'selected-difficulty'
+                      }
+                      variant="primary"
                       onClick={() => SetGameDificulty(BoardDifficulty.MEDIUM)}
                     >
                       Médio
@@ -143,7 +151,11 @@ const AppInterface: React.FC<{}> = () => {
                   </Col>
                   <Col>
                     <Button
-                      variant="outline-danger"
+                      className={
+                        gameboard.specifications.difficulty ===
+                          BoardDifficulty.HARD && 'selected-difficulty'
+                      }
+                      variant="warning"
                       onClick={() => SetGameDificulty(BoardDifficulty.HARD)}
                     >
                       Dificil
@@ -151,7 +163,11 @@ const AppInterface: React.FC<{}> = () => {
                   </Col>
                   <Col>
                     <Button
-                      variant="outline-dark"
+                      className={
+                        gameboard.specifications.difficulty ===
+                          BoardDifficulty.EXTREME && 'selected-difficulty'
+                      }
+                      variant="danger"
                       onClick={() => SetGameDificulty(BoardDifficulty.EXTREME)}
                     >
                       Extremo

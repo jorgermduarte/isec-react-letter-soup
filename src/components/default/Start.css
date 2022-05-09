@@ -28,3 +28,8 @@
     text-align: left;
     padding:10px;
 }
+
+.selected-difficulty{
+    border: 3px solid #353b41;
+    padding: 3px !important;
+}
