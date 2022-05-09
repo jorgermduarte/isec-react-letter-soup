@@ -38,7 +38,7 @@ const Statistics: React.FC<{}> = () => {
               <tr key={'classification-' + index}>
                 <td>{index + 1}</td>
                 <td>{cl.username}</td>
-                <td>{cl.difficulty}</td>
+                <td>{getDifficulty(cl.difficulty)}</td>
                 <td>{cl.points}</td>
               </tr>
             ))}
