@@ -171,8 +171,12 @@ const AppInterface: React.FC<{}> = () => {
               </Button>
             </Form.Group>
             <Form.Group className="mb-3">
-              {appState.errors.map(err => {
-                return <div className="game-error">{err}</div>;
+              {appState.errors.map((err, index) => {
+                return (
+                  <div className="game-error" key={'intro-game-error-' + index}>
+                    {err}
+                  </div>
+                );
               })}
             </Form.Group>
           </Form>

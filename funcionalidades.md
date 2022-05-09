@@ -26,7 +26,7 @@
 - [x] Seleção da palavra na grelha (com ajuda do rato e/ou teclado);
 - [x] 3 níveis de jogo (simples, intermédio e avançado) em que a dimensão da grelha e número de palavras varia;
 - [ ] Tempo de jogo limitado, dependendo do nível;
-- [ ] Pontuação (metodologia ao critério dos alunos);
+- [x] Pontuação (metodologia ao critério dos alunos);
 - [x] Identificação de fim de jogo;
 - [x] Permitir jogar novamente;
 - [x] Permitir a especificação de outras palavras, para além das já existentes no array.

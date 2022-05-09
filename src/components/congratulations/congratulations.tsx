@@ -6,31 +6,59 @@ import {useDispatch} from 'react-redux';
 import {changeEndGame} from '../../store/board-actions';
 import {getDifficulty} from '../../utils/utils';
 
+type Classification = {
+  username: string;
+  difficulty: number;
+  points: number;
+};
+
 const Statistics: React.FC<{}> = () => {
+  const classificationsNameStorage = 'game-classifications';
+  const classificationBoard = localStorage.getItem(classificationsNameStorage);
+  const classificationBoardList = JSON.parse(
+    classificationBoard
+  ) as Classification[];
   return (
     <Table striped bordered hover>
       <thead>
         <tr>
           <th>#</th>
           <th>Nome</th>
-          <th>Tempo</th>
           <th>Dificuldade</th>
+          <th>Pontos</th>
         </tr>
       </thead>
-      <tbody></tbody>
+      <tbody>
+        {classificationBoardList &&
+          classificationBoardList
+            .sort((a, b) => {
+              return b.points - a.points;
+            })
+            .map((cl, index) => (
+              <tr key={'classification-' + index}>
+                <td>{index + 1}</td>
+                <td>{cl.username}</td>
+                <td>{cl.difficulty}</td>
+                <td>{cl.points}</td>
+              </tr>
+            ))}
+      </tbody>
     </Table>
   );
 };
 
 const Congratulations: React.FC<{}> = () => {
+  const classificationsNameStorage = 'game-classifications';
   const dispatch = useDispatch();
   const gameboard = useAppSelector(state => state.gameboard);
+  const classificationBoard = localStorage.getItem(classificationsNameStorage);
+  const classificationBoardList = JSON.parse(
+    classificationBoard
+  ) as Classification[];
 
   const _second = 1000;
   const _minute = _second * 60;
   const _hour = _minute * 60;
-
-  function showClassifications() {}
 
   function getTimeTotal() {
     const distance =
@@ -43,6 +71,24 @@ const Congratulations: React.FC<{}> = () => {
   }
 
   function playAgain() {
+    const result = {
+      username: gameboard.username,
+      points: calculatePoints(),
+      difficulty: gameboard.specifications.difficulty,
+    } as Classification;
+
+    if (classificationBoardList) {
+      const arrayResult = [...classificationBoardList, result];
+      localStorage.setItem(
+        classificationsNameStorage,
+        JSON.stringify(arrayResult)
+      );
+    } else {
+      localStorage.setItem(
+        classificationsNameStorage,
+        JSON.stringify([result])
+      );
+    }
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     //@ts-ignore
     dispatch(changeEndGame(false));
