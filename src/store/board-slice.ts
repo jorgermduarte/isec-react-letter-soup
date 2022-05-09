@@ -5,6 +5,7 @@ import {
   changeInitialized,
   cleanMatrixSelections,
   setMatrix,
+  setUsername,
   setWords,
   updateMatrix,
   updateMatrixPosition,
@@ -25,10 +26,11 @@ export type updateMatrixType = {
 };
 
 export enum BoardDifficulty {
-  EASY,
-  MEDIUM,
-  HARD,
-  EXTREME,
+  UNDEFINED = 0,
+  EASY = 1,
+  MEDIUM = 2,
+  HARD = 3,
+  EXTREME = 4,
 }
 
 type DifficultySpecs = {
@@ -52,13 +54,14 @@ export type BoardState = {
   gameEndTimmer?: string;
   gameEnd: boolean;
   initialized: boolean;
+  username?: string;
 };
 
 export const initialState: BoardState = {
   words: [],
   matrix: [],
   specifications: {
-    difficulty: BoardDifficulty.EASY,
+    difficulty: BoardDifficulty.UNDEFINED,
     columns: 18,
     lines: 10,
     totalWords: 4,
@@ -179,6 +182,12 @@ const BoardSlice = createSlice({
       {payload}: PayloadAction<boolean>
     ) => {
       state.initialized = payload;
+    },
+    [`${setUsername.fulfilled}`]: (
+      state: BoardState,
+      {payload}: PayloadAction<string>
+    ) => {
+      state.username = payload;
     },
   },
 });

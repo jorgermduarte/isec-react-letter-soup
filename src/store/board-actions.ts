@@ -98,3 +98,10 @@ export const changeInitialized = createAsyncThunk(
     return prop;
   }
 );
+
+export const setUsername = createAsyncThunk(
+  'gameboard/setUsername',
+  async (username: string): Promise<string> => {
+    return username;
+  }
+);

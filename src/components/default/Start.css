@@ -19,3 +19,12 @@
 *{
     font-family: 'Ubuntu';
 }
+
+.game-error{
+    color:red;
+}
+
+.intro-game-elements{
+    text-align: left;
+    padding:10px;
+}

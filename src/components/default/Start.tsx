@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Col, Row, Form, Button, ButtonGroup} from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './Start.css';
@@ -8,15 +8,50 @@ import BoardStore from '../../store/board-slice';
 import Game from '../game/Game';
 import {useAppSelector} from '../../store/hooks';
 import Congratulations from '../congratulations/congratulations';
-import {changeInitialized} from '../../store/board-actions';
+import {changeInitialized, setUsername} from '../../store/board-actions';
+import {AnyRecord} from 'dns';
 
 const AppInterface: React.FC<{}> = () => {
   const dispatch = useDispatch();
+  const gameboard = useAppSelector(state => state.gameboard);
+
+  const [appState, setAppState] = useState({
+    username: '',
+    errors: [],
+  });
 
   function StartGame() {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     //@ts-ignore
-    dispatch(changeInitialized(true));
+    const currentErrors = [];
+    if (appState.username.length < 4) {
+      currentErrors.push(
+        'Por favor forneça um nome de utilizador com pelo menos 4 caracteres.'
+      );
+    }
+    if (gameboard.specifications.difficulty === 0) {
+      currentErrors.push(
+        'Por favor escolha uma dificuldade antes de iniciar o jogo.'
+      );
+    }
+
+    if (currentErrors.length === 0) {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      //@ts-ignore
+      dispatch(setUsername(appState.username));
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      //@ts-ignore
+      dispatch(changeInitialized(true));
+    } else {
+      setAppState({
+        username: appState.username,
+        errors: currentErrors,
+      });
+    }
+  }
+
+  function handleSetUsername(event: unknown) {
+    setAppState({username: event.target.value, errors: []});
   }
 
   function SetGameDificulty(dificulty: BoardDifficulty) {
@@ -66,7 +101,8 @@ const AppInterface: React.FC<{}> = () => {
   return (
     <div style={{padding: '20px'}} className="formStart">
       <Row>
-        <Col md={{span: 4, offset: 4}}>
+        <Col md={4}></Col>
+        <Col md={4}>
           <Row>
             <Col>
               <div className="h2 gameTitle">
@@ -78,7 +114,12 @@ const AppInterface: React.FC<{}> = () => {
           <Form>
             <Form.Group className="mb-3">
               <Form.Label>Nome Utilizador</Form.Label>
-              <Form.Control type="text" placeholder="Nome de utilizador..." />
+              <Form.Control
+                type="text"
+                placeholder="Nome de utilizador..."
+                value={appState.username}
+                onChange={handleSetUsername}
+              />
             </Form.Group>
             <Form.Group className="mb-3">
               <Form.Label>Dificuldade</Form.Label>
@@ -130,11 +171,24 @@ const AppInterface: React.FC<{}> = () => {
               </Button>
             </Form.Group>
             <Form.Group className="mb-3">
-              <p>a2021110042 - Jorge Duarte</p>
-              <p>a2021000000 - João Marques</p>
-              <p>a2021000000 - Rodrigo Cruz</p>
+              {appState.errors.map(err => {
+                return <div className="game-error">{err}</div>;
+              })}
             </Form.Group>
           </Form>
+        </Col>
+        <Col md={4}>
+          <Form.Group className="mb-3 intro-game-elements">
+            <p>Linguagens Script 2022 - Sopa de Letras</p>
+            <p>
+              <b>Elementos do grupo:</b>
+            </p>
+            <ul>
+              <li>a2021110042 - Jorge Duarte</li>
+              <li>a2021000000 - João Marques</li>
+              <li>a2019122799 - Rodrigo Cruz</li>
+            </ul>
+          </Form.Group>
         </Col>
       </Row>
     </div>

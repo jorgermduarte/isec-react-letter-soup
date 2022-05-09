@@ -43,6 +43,7 @@ const Timmer: React.FC<{}> = () => {
       <div className="game-timmer">
         Tempo Atual: {timmerTime.minutes} minutos, {timmerTime.seconds} segundos
       </div>
+      <div className="game-timmer-limit">Tempo Limite:</div>
       <hr />
     </React.Fragment>
   );

@@ -1,6 +1,7 @@
 import React from 'react';
 import {useAppSelector} from '../../store/hooks';
 import Timmer from '../timmer/Timmer';
+import {getDifficulty} from '../../utils/utils';
 
 const WordList: React.FC<{}> = () => {
   const gameboard = useAppSelector(state => state.gameboard);
@@ -12,7 +13,15 @@ const WordList: React.FC<{}> = () => {
         <p>
           <b>Dificuldade Atual: </b>
         </p>
-        <p>{gameboard.specifications.difficulty}</p>
+        <p>{getDifficulty(gameboard.specifications.difficulty)}</p>
+      </div>
+      <hr />
+
+      <div className="game-difficulty">
+        <p>
+          <b>Utilizador: </b>
+        </p>
+        <p>{gameboard.username}</p>
       </div>
       <hr />
 
