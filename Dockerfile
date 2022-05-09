@@ -1,11 +1,13 @@
 #node official alpine image
-FROM node:18:alpine
+FROM node:16
 
 # set working directory
-WORKDIR /app
+WORKDIR app
 
-COPY package.json ./app
-COPY ./src ./app
+COPY package*.json ./
+COPY . .
 
 # run npm install in our local machine
 RUN npm install --silent
+
+EXPOSE ${PORT}
