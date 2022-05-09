@@ -7,6 +7,6 @@ WORKDIR app
 COPY package*.json ./
 COPY . .
 
-RUN npm install --silent
+RUN npm install
 
 EXPOSE ${PORT}
