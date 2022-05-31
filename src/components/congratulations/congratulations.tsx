@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {Button, Row, Col, Table} from 'react-bootstrap';
 import './congratulations.css';
 import {useAppSelector} from '../../store/hooks';
@@ -13,11 +13,64 @@ type Classification = {
 };
 
 const Statistics: React.FC<{}> = () => {
+  const gameboard = useAppSelector(state => state.gameboard);
   const classificationsNameStorage = 'game-classifications';
   const classificationBoard = localStorage.getItem(classificationsNameStorage);
   const classificationBoardList = JSON.parse(
     classificationBoard
   ) as Classification[];
+
+  const [userClassification, setUserClassification] = useState({
+    saved: false,
+  });
+
+  function calculatePoints() {
+    const distance =
+      new Date(gameboard.gameEndTimmer).getTime() -
+      new Date(gameboard.timmer!).getTime();
+
+    const pontos = Math.floor(
+      (gameboard.specifications.difficulty *
+        10000 *
+        gameboard.specifications.totalWords) /
+        (distance / 1000)
+    );
+    return pontos;
+  }
+
+  useEffect(() => {
+    console.log(' >> useEffect save game called');
+    if (
+      userClassification.saved === false &&
+      gameboard.gameLost === false &&
+      gameboard.gameEnd === true
+    ) {
+      console.log(' >>> SAVING USER CLASSIFICATION!');
+      const result = {
+        username: gameboard.username,
+        points: calculatePoints(),
+        difficulty: gameboard.specifications.difficulty,
+      } as Classification;
+
+      if (classificationBoardList) {
+        const arrayResult = [...classificationBoardList, result];
+        localStorage.setItem(
+          classificationsNameStorage,
+          JSON.stringify(arrayResult)
+        );
+      } else {
+        localStorage.setItem(
+          classificationsNameStorage,
+          JSON.stringify([result])
+        );
+      }
+
+      setUserClassification({
+        saved: true,
+      });
+    }
+  }, [userClassification.saved]);
+
   return (
     <Table striped bordered hover>
       <thead>
@@ -29,32 +82,29 @@ const Statistics: React.FC<{}> = () => {
         </tr>
       </thead>
       <tbody>
-        {classificationBoardList &&
-          classificationBoardList
-            .sort((a, b) => {
-              return b.points - a.points;
-            })
-            .map((cl, index) => (
-              <tr key={'classification-' + index}>
-                <td>{index + 1}</td>
-                <td>{cl.username}</td>
-                <td>{getDifficulty(cl.difficulty)}</td>
-                <td>{cl.points}</td>
-              </tr>
-            ))}
+        {userClassification.saved
+          ? classificationBoardList &&
+            classificationBoardList
+              .sort((a, b) => {
+                return b.points - a.points;
+              })
+              .map((cl, index) => (
+                <tr key={'classification-' + index}>
+                  <td>{index + 1}</td>
+                  <td>{cl.username}</td>
+                  <td>{getDifficulty(cl.difficulty)}</td>
+                  <td>{cl.points}</td>
+                </tr>
+              ))
+          : null}
       </tbody>
     </Table>
   );
 };
 
 const Congratulations: React.FC<{}> = () => {
-  const classificationsNameStorage = 'game-classifications';
   const dispatch = useDispatch();
   const gameboard = useAppSelector(state => state.gameboard);
-  const classificationBoard = localStorage.getItem(classificationsNameStorage);
-  const classificationBoardList = JSON.parse(
-    classificationBoard
-  ) as Classification[];
 
   const _second = 1000;
   const _minute = _second * 60;
@@ -71,39 +121,15 @@ const Congratulations: React.FC<{}> = () => {
   }
 
   function playAgain() {
-    const result = {
-      username: gameboard.username,
-      points: calculatePoints(),
-      difficulty: gameboard.specifications.difficulty,
-    } as Classification;
-
-    if (gameboard.gameLost === false) {
-      if (classificationBoardList) {
-        const arrayResult = [...classificationBoardList, result];
-        localStorage.setItem(
-          classificationsNameStorage,
-          JSON.stringify(arrayResult)
-        );
-      } else {
-        localStorage.setItem(
-          classificationsNameStorage,
-          JSON.stringify([result])
-        );
-      }
-    }
-
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     //@ts-ignore
     dispatch(changeEndGame(false));
-    // window.location.reload();
   }
 
   function calculatePoints() {
     const distance =
       new Date(gameboard.gameEndTimmer).getTime() -
       new Date(gameboard.timmer!).getTime();
-    const minutes = Math.floor((distance % _hour) / _minute);
-    const seconds = Math.floor((distance % _minute) / _second);
 
     const pontos = Math.floor(
       (gameboard.specifications.difficulty *
