@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import {Col, Row, Form, Button, ButtonGroup} from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './Start.css';
@@ -9,7 +9,6 @@ import Game from '../game/Game';
 import {useAppSelector} from '../../store/hooks';
 import Congratulations from '../congratulations/congratulations';
 import {changeInitialized, setUsername} from '../../store/board-actions';
-import {AnyRecord} from 'dns';
 
 const AppInterface: React.FC<{}> = () => {
   const dispatch = useDispatch();
@@ -51,6 +50,8 @@ const AppInterface: React.FC<{}> = () => {
   }
 
   function handleSetUsername(event: unknown) {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    //@ts-ignore
     setAppState({username: event.target.value, errors: []});
   }
 
@@ -59,6 +60,7 @@ const AppInterface: React.FC<{}> = () => {
       case BoardDifficulty.EASY:
         dispatch(
           BoardStore.actions.setDifficulty({
+            secondsLimit: 180,
             difficulty: BoardDifficulty.EASY,
             columns: 8,
             lines: 10,
@@ -69,6 +71,7 @@ const AppInterface: React.FC<{}> = () => {
       case BoardDifficulty.MEDIUM:
         dispatch(
           BoardStore.actions.setDifficulty({
+            secondsLimit: 240,
             difficulty: BoardDifficulty.MEDIUM,
             columns: 15,
             lines: 10,
@@ -79,6 +82,7 @@ const AppInterface: React.FC<{}> = () => {
       case BoardDifficulty.HARD:
         dispatch(
           BoardStore.actions.setDifficulty({
+            secondsLimit: 300,
             difficulty: BoardDifficulty.HARD,
             columns: 20,
             lines: 10,
@@ -89,6 +93,7 @@ const AppInterface: React.FC<{}> = () => {
       case BoardDifficulty.EXTREME:
         dispatch(
           BoardStore.actions.setDifficulty({
+            secondsLimit: 450,
             difficulty: BoardDifficulty.EXTREME,
             columns: 25,
             lines: 15,

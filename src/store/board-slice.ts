@@ -34,6 +34,7 @@ export enum BoardDifficulty {
 }
 
 type DifficultySpecs = {
+  secondsLimit: number;
   difficulty: BoardDifficulty;
   columns: number;
   lines: number;
@@ -61,17 +62,21 @@ export const initialState: BoardState = {
   words: [],
   matrix: [],
   specifications: {
-    difficulty: BoardDifficulty.UNDEFINED,
-    columns: 18,
-    lines: 10,
-    totalWords: 4,
+    secondsLimit: 0, // current game board seconds limit
+    difficulty: BoardDifficulty.UNDEFINED, //current game dificulty
+    columns: 18, // gameboard total columns
+    lines: 10, // gameboard current total lines
+    totalWords: 4, // gameboard current total words
   },
   settings: {
     wordsRendered: 0,
   },
   foundWords: [],
-  gameEnd: false,
-  initialized: false,
+  gameEnd: false, //if the game as ended and is on the save scoreboard screen
+  initialized: false, // if the game has been initialized
+  timmer: undefined, // start game date time
+  gameEndTimmer: undefined, //end game date time
+  username: '', //game username
 };
 
 const BoardSlice = createSlice({
@@ -83,6 +88,22 @@ const BoardSlice = createSlice({
       {payload}: PayloadAction<DifficultySpecs>
     ) {
       state.specifications = payload;
+    },
+    verifyEndGame(state: BoardState, {payload}: PayloadAction<boolean>) {
+      if (state.timmer && state.gameEnd === false) {
+        console.log('validating end game based on timme');
+        const expectedFinishDate = new Date(state.timmer);
+        expectedFinishDate.setSeconds(
+          expectedFinishDate.getSeconds() + state.specifications.secondsLimit
+        );
+
+        const currentDate = new Date();
+
+        if (currentDate.getTime() > expectedFinishDate.getTime()) {
+          //todo trigger game finish state, preventing the user to save to scoreboard since he failed to end based on the time
+          console.log('>>>>>>>>>>>>>>>>>> TRIGGER GAME END BASED ON TIME');
+        }
+      }
     },
   },
   extraReducers: {
@@ -181,6 +202,9 @@ const BoardSlice = createSlice({
       state: BoardState,
       {payload}: PayloadAction<boolean>
     ) => {
+      if (payload) {
+        state.timmer = new Date().toISOString();
+      }
       state.initialized = payload;
     },
     [`${setUsername.fulfilled}`]: (
