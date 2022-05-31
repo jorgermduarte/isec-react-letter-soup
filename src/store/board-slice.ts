@@ -56,6 +56,7 @@ export type BoardState = {
   gameEnd: boolean;
   initialized: boolean;
   username?: string;
+  gameLost: boolean;
 };
 
 export const initialState: BoardState = {
@@ -72,6 +73,7 @@ export const initialState: BoardState = {
     wordsRendered: 0,
   },
   foundWords: [],
+  gameLost: false,
   gameEnd: false, //if the game as ended and is on the save scoreboard screen
   initialized: false, // if the game has been initialized
   timmer: undefined, // start game date time
@@ -100,8 +102,11 @@ const BoardSlice = createSlice({
         const currentDate = new Date();
 
         if (currentDate.getTime() > expectedFinishDate.getTime()) {
-          //todo trigger game finish state, preventing the user to save to scoreboard since he failed to end based on the time
-          console.log('>>>>>>>>>>>>>>>>>> TRIGGER GAME END BASED ON TIME');
+          console.log(
+            '>>>>>>>>>>>>>>>>>> TRIGGER GAME END BASED ON TIME - USER LOST'
+          );
+          state.gameLost = true;
+          state.gameEnd = true;
         }
       }
     },
@@ -189,6 +194,7 @@ const BoardSlice = createSlice({
         } else {
           state.initialized = false;
           state.gameEnd = false;
+          state.gameLost = false;
           state.matrix = [];
           state.gameEndTimmer = undefined;
           state.settings.wordsRendered = 0;

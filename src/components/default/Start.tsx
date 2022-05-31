@@ -60,7 +60,7 @@ const AppInterface: React.FC<{}> = () => {
       case BoardDifficulty.EASY:
         dispatch(
           BoardStore.actions.setDifficulty({
-            secondsLimit: 180,
+            secondsLimit: 50,
             difficulty: BoardDifficulty.EASY,
             columns: 8,
             lines: 10,
