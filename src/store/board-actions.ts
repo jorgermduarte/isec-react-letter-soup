@@ -35,7 +35,10 @@ export const setMatrix = createAsyncThunk(
 export const setWords = createAsyncThunk(
   'gameboard/setWords',
   async (gameboard: BoardState): Promise<string[]> => {
-    const myCustomList = wordsList.sort(() => 0.5 - Math.random());
+    let myCustomList = wordsList.sort(() => 0.5 - Math.random());
+    myCustomList = myCustomList.filter(
+      e => e.length < gameboard.specifications.lines
+    );
     //replace the gameWordsNumber with the x words number based on the difficulty
     const remakedList = myCustomList.slice(
       0,
