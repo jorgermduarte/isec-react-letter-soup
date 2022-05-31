@@ -1,6 +1,3 @@
-**Todo stuff**
-- [ ] unsubscribe the timmer useEffect on game completed
-
 **Especificações mencionadas no trabalho**
 - [x] Criação do projeto através de React App
 - [x] Criação e utilização de functional components
@@ -25,7 +22,7 @@
 - [x] Apresentação da grelha que incluam as palavras em posição aleatória;
 - [x] Seleção da palavra na grelha (com ajuda do rato e/ou teclado);
 - [x] 3 níveis de jogo (simples, intermédio e avançado) em que a dimensão da grelha e número de palavras varia;
-- [ ] Tempo de jogo limitado, dependendo do nível;
+- [x] Tempo de jogo limitado, dependendo do nível;
 - [x] Pontuação (metodologia ao critério dos alunos);
 - [x] Identificação de fim de jogo;
 - [x] Permitir jogar novamente;
@@ -51,7 +48,7 @@
 - [x] Preenchimento da grelha com palavras e letras de forma aleatória (20%)
 - [x] Encontrar palavra na grelha e retirar/destacar que já foi encontrada na lista(30%)
 - [x] Pontuação do Jogo (5%)
-- [ ] Identificação fim de jogo - Temporizador (5%)
+- [x] Identificação fim de jogo - Temporizador (5%)
 - [x] Vários níveis de jogos (10%)
 - [x] Permitir a especificação de novas palavras (10%)
 - [x] Critérios gerais a aplicar a nota final:

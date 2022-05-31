@@ -77,18 +77,21 @@ const Congratulations: React.FC<{}> = () => {
       difficulty: gameboard.specifications.difficulty,
     } as Classification;
 
-    if (classificationBoardList) {
-      const arrayResult = [...classificationBoardList, result];
-      localStorage.setItem(
-        classificationsNameStorage,
-        JSON.stringify(arrayResult)
-      );
-    } else {
-      localStorage.setItem(
-        classificationsNameStorage,
-        JSON.stringify([result])
-      );
+    if (gameboard.gameLost === false) {
+      if (classificationBoardList) {
+        const arrayResult = [...classificationBoardList, result];
+        localStorage.setItem(
+          classificationsNameStorage,
+          JSON.stringify(arrayResult)
+        );
+      } else {
+        localStorage.setItem(
+          classificationsNameStorage,
+          JSON.stringify([result])
+        );
+      }
     }
+
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     //@ts-ignore
     dispatch(changeEndGame(false));
@@ -113,19 +116,34 @@ const Congratulations: React.FC<{}> = () => {
 
   return (
     <Row className="congratulations-page">
-      <Col lg={{offset: 2, span: 8}}>
-        <h3>Parabéns {gameboard.username}! 🎉 acabou o jogo! 😀</h3>
-        <p>
-          Finalizou o jogo em {getTimeTotal()} na dificuldade{' '}
-          {getDifficulty(gameboard.specifications.difficulty)}
-        </p>
-        <p>A sua pontuação foi {calculatePoints()} pontos</p>
-        <hr />
-        <Statistics></Statistics>
-        <Button className="playAgain" onClick={() => playAgain()}>
-          Jogar Novamente
-        </Button>
-      </Col>
+      {gameboard.gameLost === false ? (
+        <Col lg={{offset: 2, span: 8}}>
+          <h3>Parabéns {gameboard.username}! 🎉 acabou o jogo! 😀</h3>
+          <p>
+            Finalizou o jogo em {getTimeTotal()} na dificuldade{' '}
+            {getDifficulty(gameboard.specifications.difficulty)}
+          </p>
+          <p>A sua pontuação foi {calculatePoints()} pontos</p>
+          <hr />
+          <Statistics></Statistics>
+          <Button className="playAgain" onClick={() => playAgain()}>
+            Jogar Novamente
+          </Button>
+        </Col>
+      ) : (
+        <Col lg={{offset: 2, span: 8}}>
+          <h3>{gameboard.username}, perdes-te o jogo ...</h3>
+          <p>Não conseguiste finalizar o nível a tempo, tenta outra vez !</p>
+          <img
+            src="https://cdn.shopify.com/s/files/1/1061/1924/products/Sad_Face_Emoji_large.png?v=1571606037"
+            width={'300px'}
+          ></img>
+          <hr />
+          <Button className="playAgain" onClick={() => playAgain()}>
+            Jogar Novamente
+          </Button>
+        </Col>
+      )}
     </Row>
   );
 };

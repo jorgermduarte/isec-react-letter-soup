@@ -1,49 +1,66 @@
 import React, {useEffect, useState} from 'react';
 import {useAppSelector} from '../../store/hooks';
+import BoardStore from '../../store/board-slice';
+import {useDispatch} from 'react-redux';
 
 const Timmer: React.FC<{}> = () => {
   const gameboard = useAppSelector(state => state.gameboard);
-
-  const [timmerTime, setTimer] = useState({
-    minutes: 0,
-    seconds: 0,
+  const dispatch = useDispatch();
+  const [timmerTime, setTimerTime] = useState({
+    gameTimmer: {
+      minutes: 0,
+      seconds: 0,
+    },
   });
+
+  const _second = 1000;
+  const _minute = _second * 60;
+  const _hour = _minute * 60;
+
+  const startTime = new Date(gameboard.timmer);
+  const limitDate = new Date(gameboard.timmer);
+  limitDate.setSeconds(
+    limitDate.getSeconds() + gameboard.specifications.secondsLimit
+  );
+  const distanceTimeLimit = limitDate.getTime() - startTime.getTime();
+  const totalMaxMinutes = Math.floor((distanceTimeLimit % _hour) / _minute);
+  const totalMaxSeconds = Math.floor((distanceTimeLimit % _minute) / _second);
+
+  function getTimer() {
+    setTimeout(() => {
+      const now = new Date();
+      const distance = now.getTime() - new Date(gameboard.timmer!).getTime();
+      const minutes = Math.floor((distance % _hour) / _minute);
+      const seconds = Math.floor((distance % _minute) / _second);
+      setTimerTime({
+        gameTimmer: {
+          minutes: minutes,
+          seconds: seconds,
+        },
+      });
+    }, 1000);
+  }
+
+  function verifyEndGame() {
+    setTimeout(() => {
+      dispatch(BoardStore.actions.verifyEndGame(true));
+    }, 1000);
+  }
 
   useEffect(() => {
     getTimer();
-  }, [gameboard.timmer, setTimer]);
-
-  function getTimer() {
-    const _second = 1000;
-    const _minute = _second * 60;
-    const _hour = _minute * 60;
-    //   const _day = _hour * 24;
-
-    if (gameboard.timmer !== undefined) {
-      const now = new Date();
-      //   console.log(gameboard.timmer);
-
-      const distance = now.getTime() - new Date(gameboard.timmer!).getTime();
-      // console.log(distance);
-      //   const days = Math.floor(distance / _day);
-      //   const hours = Math.floor((distance % _day) / _hour);
-      const minutes = Math.floor((distance % _hour) / _minute);
-      const seconds = Math.floor((distance % _minute) / _second);
-      setTimer({
-        minutes: minutes,
-        seconds: seconds,
-      });
-      //   console.log(`---> minutes: ${minutes}, seconds : ${seconds}`);
-      setTimeout(getTimer, 1000);
-    }
-  }
+    verifyEndGame();
+  }, [timmerTime.gameTimmer.seconds]);
 
   return (
     <React.Fragment>
       <div className="game-timmer">
-        Tempo Atual: {timmerTime.minutes} minutos, {timmerTime.seconds} segundos
+        Tempo Atual: {timmerTime.gameTimmer.minutes} minutos,{' '}
+        {timmerTime.gameTimmer.seconds} segundos
       </div>
-      <div className="game-timmer-limit">Tempo Limite:</div>
+      <div className="game-timmer-limit">
+        Tempo Limite: {totalMaxMinutes} minutos e {totalMaxSeconds} segundos
+      </div>
       <hr />
     </React.Fragment>
   );
