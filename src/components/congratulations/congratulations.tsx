@@ -158,7 +158,7 @@ const Congratulations: React.FC<{}> = () => {
         </Col>
       ) : (
         <Col lg={{offset: 2, span: 8}}>
-          <h3>{gameboard.username}, perdes-te o jogo ...</h3>
+          <h3>{gameboard.username}, perdeste o jogo ...</h3>
           <p>Não conseguiste finalizar o nível a tempo, tenta outra vez !</p>
           <img
             src="https://cdn.shopify.com/s/files/1/1061/1924/products/Sad_Face_Emoji_large.png?v=1571606037"
