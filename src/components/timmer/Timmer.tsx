@@ -17,8 +17,8 @@ const Timmer: React.FC<{}> = () => {
   const _minute = _second * 60;
   const _hour = _minute * 60;
 
-  const startTime = new Date(gameboard.timmer);
-  const limitDate = new Date(gameboard.timmer);
+  const startTime = new Date(gameboard.timmer!);
+  const limitDate = new Date(gameboard.timmer!);
   limitDate.setSeconds(
     limitDate.getSeconds() + gameboard.specifications.secondsLimit
   );
@@ -27,24 +27,28 @@ const Timmer: React.FC<{}> = () => {
   const totalMaxSeconds = Math.floor((distanceTimeLimit % _minute) / _second);
 
   function getTimer() {
-    setTimeout(() => {
-      const now = new Date();
-      const distance = now.getTime() - new Date(gameboard.timmer!).getTime();
-      const minutes = Math.floor((distance % _hour) / _minute);
-      const seconds = Math.floor((distance % _minute) / _second);
-      setTimerTime({
-        gameTimmer: {
-          minutes: minutes,
-          seconds: seconds,
-        },
-      });
-    }, 1000);
+    if (!gameboard.gameEnd) {
+      setTimeout(() => {
+        const now = new Date();
+        const distance = now.getTime() - new Date(gameboard.timmer!).getTime();
+        const minutes = Math.floor((distance % _hour) / _minute);
+        const seconds = Math.floor((distance % _minute) / _second);
+        setTimerTime({
+          gameTimmer: {
+            minutes: minutes,
+            seconds: seconds,
+          },
+        });
+      }, 1000);
+    }
   }
 
   function verifyEndGame() {
-    setTimeout(() => {
-      dispatch(BoardStore.actions.verifyEndGame(true));
-    }, 1000);
+    if (!gameboard.gameEnd) {
+      setTimeout(() => {
+        dispatch(BoardStore.actions.verifyEndGame(true));
+      }, 1000);
+    }
   }
 
   useEffect(() => {

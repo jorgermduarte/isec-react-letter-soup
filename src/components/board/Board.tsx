@@ -616,4 +616,4 @@ const BoardComponent: React.FC<{}> = () => {
   );
 };
 
-export default BoardComponent;
+export default React.memo(BoardComponent);

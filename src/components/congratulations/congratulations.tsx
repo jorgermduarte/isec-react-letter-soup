@@ -16,9 +16,11 @@ const Statistics: React.FC<{}> = () => {
   const gameboard = useAppSelector(state => state.gameboard);
   const classificationsNameStorage = 'game-classifications';
   const classificationBoard = localStorage.getItem(classificationsNameStorage);
-  const classificationBoardList = JSON.parse(
-    classificationBoard
-  ) as Classification[];
+
+  const classificationBoardList =
+    classificationBoard !== null
+      ? (JSON.parse(classificationBoard) as Classification[])
+      : [];
 
   const [userClassification, setUserClassification] = useState({
     saved: false,
@@ -26,7 +28,7 @@ const Statistics: React.FC<{}> = () => {
 
   function calculatePoints() {
     const distance =
-      new Date(gameboard.gameEndTimmer).getTime() -
+      new Date(gameboard.gameEndTimmer!).getTime() -
       new Date(gameboard.timmer!).getTime();
 
     const pontos = Math.floor(
@@ -110,34 +112,23 @@ const Congratulations: React.FC<{}> = () => {
   const _minute = _second * 60;
   const _hour = _minute * 60;
 
-  function getTimeTotal() {
-    const distance =
-      new Date(gameboard.gameEndTimmer).getTime() -
-      new Date(gameboard.timmer!).getTime();
-    const minutes = Math.floor((distance % _hour) / _minute);
-    const seconds = Math.floor((distance % _minute) / _second);
+  const distance =
+    new Date(gameboard.gameEndTimmer!).getTime() -
+    new Date(gameboard.timmer!).getTime();
+  const minutes = Math.floor((distance % _hour) / _minute);
+  const seconds = Math.floor((distance % _minute) / _second);
 
-    return `${minutes} minutos e ${seconds} segundos`;
-  }
+  const points = Math.floor(
+    (gameboard.specifications.difficulty *
+      10000 *
+      gameboard.specifications.totalWords) /
+      (distance / 1000)
+  );
 
   function playAgain() {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     //@ts-ignore
     dispatch(changeEndGame(false));
-  }
-
-  function calculatePoints() {
-    const distance =
-      new Date(gameboard.gameEndTimmer).getTime() -
-      new Date(gameboard.timmer!).getTime();
-
-    const pontos = Math.floor(
-      (gameboard.specifications.difficulty *
-        10000 *
-        gameboard.specifications.totalWords) /
-        (distance / 1000)
-    );
-    return pontos;
   }
 
   return (
@@ -146,10 +137,11 @@ const Congratulations: React.FC<{}> = () => {
         <Col lg={{offset: 2, span: 8}}>
           <h3>Parabéns {gameboard.username}! 🎉 acabou o jogo! 😀</h3>
           <p>
-            Finalizou o jogo em {getTimeTotal()} na dificuldade{' '}
-            {getDifficulty(gameboard.specifications.difficulty)}
+            Finalizou o jogo em
+            {' ' + minutes + ' minutos e ' + seconds + ' segundos'} na
+            dificuldade {getDifficulty(gameboard.specifications.difficulty)}
           </p>
-          <p>A sua pontuação foi {calculatePoints()} pontos</p>
+          <p>A sua pontuação foi {points} pontos</p>
           <hr />
           <Statistics></Statistics>
           <Button className="playAgain" onClick={() => playAgain()}>
@@ -165,7 +157,7 @@ const Congratulations: React.FC<{}> = () => {
             width={'300px'}
           ></img>
           <hr />
-          <Button className="playAgain" onClick={() => playAgain()}>
+          <Button className="playAgain" onClick={playAgain}>
             Jogar Novamente
           </Button>
         </Col>
@@ -174,4 +166,4 @@ const Congratulations: React.FC<{}> = () => {
   );
 };
 
-export default Congratulations;
+export default React.memo(Congratulations);
