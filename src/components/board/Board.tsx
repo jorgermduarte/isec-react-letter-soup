@@ -128,6 +128,8 @@ const BoardComponent: React.FC<{}> = () => {
     const letterCurrentSettings = gameboard.matrix[ln][cl];
     const wordLetters: string[] = [];
 
+    console.log(wordSelection.startLetterIndex, wordSelection.endLetterIndex);
+
     if (wordSelection.startLetterIndex.index === -1) {
       setWordSelection({
         startLetterIndex: {
@@ -180,42 +182,8 @@ const BoardComponent: React.FC<{}> = () => {
       );
       console.log(`last selection col:${cl} and ln:${ln}`);
 
-      //verify by line
-      if (difference < gameboard.specifications.lines) {
-        let iterationStartClLine = wordSelection.startLetterIndex.column;
-        if (cl < wordSelection.startLetterIndex.column) {
-          iterationStartClLine = cl;
-        }
-
-        for (let i = 0; i < difference + 1; i++) {
-          const iterationLetter =
-            gameboard.matrix[ln][iterationStartClLine + i];
-          finalIndexList.push({
-            index: iterationLetter.index,
-            line: ln,
-            column: iterationStartClLine + i,
-          });
-          wordLetters.push(iterationLetter.letter);
-          dispatch(
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            //@ts-ignore
-            updateMatrixPosition({
-              column: iterationStartClLine + i,
-              line: ln,
-              letter: {
-                busy: iterationLetter.busy,
-                selected: true,
-                index: iterationLetter.index,
-                letter: iterationLetter.letter,
-                filled: iterationLetter.filled,
-              },
-            })
-          );
-        }
-      }
-
       //verify by column
-      else if (wordSelection.startLetterIndex.column === cl) {
+      if (wordSelection.startLetterIndex.column === cl) {
         let startLineColIteration = wordSelection.startLetterIndex.line;
 
         if (wordSelection.startLetterIndex.line > ln) {
@@ -224,6 +192,9 @@ const BoardComponent: React.FC<{}> = () => {
         } else {
           difference = ln - wordSelection.startLetterIndex.line;
         }
+
+        console.log(`difference: ${difference}`);
+
         for (let i = 0; i < difference + 1; i++) {
           const iterationLetter =
             gameboard.matrix[startLineColIteration + i][cl];
@@ -296,7 +267,7 @@ const BoardComponent: React.FC<{}> = () => {
         } else {
           //do the inverse
           const diagDif = startColDiag - cl;
-          for (let i = diagDif; i > 0; i--) {
+          for (let i = diagDif; i > -1; i--) {
             const iterationLetterX =
               gameboard.matrix[startLineDiag + i][startColDiag - i];
             finalIndexList.push({
@@ -322,7 +293,46 @@ const BoardComponent: React.FC<{}> = () => {
             );
           }
         }
+      } else if (
+        wordSelection.startLetterIndex.line === ln &&
+        wordSelection.startLetterIndex.column !== cl
+      ) {
+        console.log('RENDERIZANDO PELA LINHA');
+        let iterationStartClLine = wordSelection.startLetterIndex.column;
+        if (cl < wordSelection.startLetterIndex.column) {
+          iterationStartClLine = cl;
+        }
+
+        console.log(cl, iterationStartClLine);
+
+        for (let i = 0; i < difference + 1; i++) {
+          const iterationLetter =
+            gameboard.matrix[ln][iterationStartClLine + i];
+
+          finalIndexList.push({
+            index: iterationLetter.index,
+            line: ln,
+            column: iterationStartClLine + i,
+          });
+          wordLetters.push(iterationLetter.letter);
+          dispatch(
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            //@ts-ignore
+            updateMatrixPosition({
+              column: iterationStartClLine + i,
+              line: ln,
+              letter: {
+                busy: iterationLetter.busy,
+                selected: true,
+                index: iterationLetter.index,
+                letter: iterationLetter.letter,
+                filled: iterationLetter.filled,
+              },
+            })
+          );
+        }
       }
+
       setWordSelection({
         startLetterIndex: wordSelection.startLetterIndex,
         endLetterIndex: {
@@ -606,4 +616,4 @@ const BoardComponent: React.FC<{}> = () => {
   );
 };
 
-export default BoardComponent;
+export default React.memo(BoardComponent);
